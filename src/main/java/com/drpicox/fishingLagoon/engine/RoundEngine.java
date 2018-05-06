@@ -111,6 +111,12 @@ public class RoundEngine {
         return new RoundCommands(commands);
     }
 
+
+
+    public Action getAction(BotId bot, int weekIndex) {
+        return commands.getAction(bot, weekIndex);
+    }
+
     // scores
 
     public RoundScores getScores(FishingLagoonRules rules) {
@@ -124,7 +130,7 @@ public class RoundEngine {
 
         // compute if not computed, and save
         if (scores == null) {
-            scores = rules.score(roundDescriptor, seats, commands);
+            scores = rules.score(this);
         }
 
         return new RoundScores(scores);

@@ -1,15 +1,15 @@
 package com.drpicox.fishingLagoon.rules;
 
-import com.drpicox.fishingLagoon.engine.RoundCommands;
+import com.drpicox.fishingLagoon.engine.RoundEngine;
 import com.drpicox.fishingLagoon.engine.RoundScoresCalculator;
-import com.drpicox.fishingLagoon.engine.RoundSeats;
-import com.drpicox.fishingLagoon.parser.RoundDescriptor;
 
 public class FishingLagoonSetupRuleFishPopulation implements FishingLagoonSetupRule {
 
 
     @Override
-    public void setup(RoundScoresCalculator scores, RoundDescriptor descriptor, RoundSeats seats, RoundCommands commands) {
+    public void setup(RoundScoresCalculator scores, RoundEngine round) {
+        var descriptor = round.getDescriptor();
+        var seats = round.getSeats();
         var maxDensity = descriptor.getMaxDensity();
         var lagoonCount = seats.getLagoonCount(null, maxDensity);
 

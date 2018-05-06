@@ -9,12 +9,12 @@ import java.util.Set;
 public class LagoonWeekCommandsView {
     private Set<BotId> lagoonBots;
     private int weekIndex;
-    private RoundCommands roundCommands;
+    private RoundEngine roundEngine;
 
-    public LagoonWeekCommandsView(Set<BotId> lagoonBots, int weekIndex, RoundCommands roundCommands) {
+    public LagoonWeekCommandsView(Set<BotId> lagoonBots, int weekIndex, RoundEngine roundEngine) {
         this.lagoonBots = lagoonBots;
         this.weekIndex = weekIndex;
-        this.roundCommands = roundCommands;
+        this.roundEngine = roundEngine;
     }
 
     public Set<BotId> getBots() {
@@ -22,6 +22,6 @@ public class LagoonWeekCommandsView {
     }
 
     public Action getAction(BotId bot) {
-        return roundCommands.getAction(bot, weekIndex);
+        return roundEngine.getAction(bot, weekIndex);
     }
 }

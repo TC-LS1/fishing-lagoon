@@ -1,11 +1,6 @@
 package com.drpicox.fishingLagoon.rules;
 
-import com.drpicox.fishingLagoon.actions.Action;
-import com.drpicox.fishingLagoon.engine.RoundCommands;
-import com.drpicox.fishingLagoon.engine.RoundScores;
-import com.drpicox.fishingLagoon.engine.RoundScoresCalculator;
-import com.drpicox.fishingLagoon.engine.RoundSeats;
-import com.drpicox.fishingLagoon.parser.RoundDescriptor;
+import com.drpicox.fishingLagoon.engine.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,32 +15,32 @@ public class FishingLagoonRules {
         this.rules = new ArrayList<>(rules);
     }
 
-    public RoundScores score(RoundDescriptor descriptor, RoundSeats seats, RoundCommands commands) {
+    public RoundScores score(RoundEngine round) {
         var scoresCalculator = new RoundScoresCalculator();
 
-        setup(scoresCalculator, descriptor, seats, commands);
-        applyWeeks(scoresCalculator, descriptor, seats, commands);
+        setup(scoresCalculator, round);
+        applyWeeks(scoresCalculator, round);
 
         return scoresCalculator.getScores();
     }
 
-    private void setup(RoundScoresCalculator scoresCalculator, RoundDescriptor descriptor, RoundSeats seats, RoundCommands commands) {
+    private void setup(RoundScoresCalculator scores, RoundEngine round) {
         for (var setupRule: setupRules) {
-            setupRule.setup(scoresCalculator, descriptor, seats, commands);
+            setupRule.setup(scores, round);
         }
     }
 
-    private void applyWeeks(RoundScoresCalculator scoresCalculator, RoundDescriptor descriptor, RoundSeats seats, RoundCommands commands) {
-        var weekCount = descriptor.getWeekCount();
+    private void applyWeeks(RoundScoresCalculator scores, RoundEngine round) {
+        var weekCount = round.getDescriptor().getWeekCount();
 
         for (int weekIndex = 0; weekIndex < weekCount; weekIndex++) {
-            applyWeek(weekIndex, scoresCalculator, descriptor, seats, commands);
+            applyWeek(weekIndex, scores, round);
         }
     }
 
-    private void applyWeek(int weekIndex, RoundScoresCalculator scoresCalculator, RoundDescriptor descriptor, RoundSeats seats, RoundCommands commands) {
+    private void applyWeek(int weekIndex, RoundScoresCalculator scores, RoundEngine round) {
         for (var rule: rules) {
-            rule.apply(weekIndex, scoresCalculator, descriptor, seats, commands);
+            rule.apply(weekIndex, scores, round);
         }
     }
 

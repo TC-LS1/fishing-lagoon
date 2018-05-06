@@ -1,16 +1,17 @@
 package com.drpicox.fishingLagoon.rules;
 
 import com.drpicox.fishingLagoon.engine.*;
-import com.drpicox.fishingLagoon.parser.RoundDescriptor;
 
 public class FishingLagoonRuleFishing implements FishingLagoonRule {
 
 
     @Override
-    public void apply(int weekIndex, RoundScoresCalculator scores, RoundDescriptor descriptor, RoundSeats seats, RoundCommands commands) {
+    public void apply(int weekIndex, RoundScoresCalculator scores, RoundEngine round) {
+        var seats = round.getSeats();
+        var commands = round.getCommands();
         for (var lagoonIndex: seats.getLagoonIndices()) {
             var scoresView = scores.getLagoonView(lagoonIndex, seats);
-            var commandsView = commands.getLagoonWeekView(lagoonIndex, seats, weekIndex);
+            var commandsView = commands.getLagoonWeekView(lagoonIndex, seats, weekIndex, round);
             applyLagoon(commandsView, scoresView);
         }
     }

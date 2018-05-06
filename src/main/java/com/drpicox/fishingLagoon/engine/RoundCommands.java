@@ -38,8 +38,8 @@ public class RoundCommands {
         return commands.get(botId).getAction(weekIndex);
     }
 
-    public LagoonWeekCommandsView getLagoonWeekView(Integer lagoonIndex, RoundSeats seats, int weekIndex) {
-        return new LagoonWeekCommandsView(seats.getLagoonBots(lagoonIndex), weekIndex, this);
+    public LagoonWeekCommandsView getLagoonWeekView(Integer lagoonIndex, RoundSeats seats, int weekIndex, RoundEngine roundEngine) {
+        return new LagoonWeekCommandsView(seats.getLagoonBots(lagoonIndex), weekIndex, roundEngine);
     }
 
     boolean commandBot(BotId botId, List<Action> actions) {
