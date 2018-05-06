@@ -121,20 +121,16 @@ public class GameRoundsTest {
 
     @Test
     public void round_seating() throws SQLException {
-        var round = gameController.createRound(ROUND_TEXT, botToken("token1"), ts(0L));
+        var roundId = gameController.createRound(ROUND_TEXT, botToken("token1"), ts(0L)).getId();
 
-        var roundTs1 = gameController.seatBot(round.getId(), botToken("token1"), 0, ts(1L));
-        var roundTs2 = gameController.seatBot(round.getId(), botToken("token2"), 0, ts(2L));
-        var roundTs3 = gameController.seatBot(round.getId(), botToken("token3"), 1, ts(3L));
+        gameController.seatBot(roundId, botToken("token1"), 0, ts(1L));
+        gameController.seatBot(roundId, botToken("token2"), 0, ts(2L));
+        gameController.seatBot(roundId, botToken("token3"), 1, ts(3L));
 
-        var roundTs4 = gameController.getRound(round.getId(), botToken("token3"), ts(3L));
-        var seatsTs4 = roundTs4.getSeats();
-        assertThat(seatsTs4, (Matcher) hasEntry(is("bot1"), hasEntry("lagoonIndex", 0)));
-        assertThat(seatsTs4, (Matcher) hasEntry(is("bot2"), hasEntry("lagoonIndex", 0)));
-        assertThat(seatsTs4, (Matcher) hasEntry(is("bot3"), hasEntry("lagoonIndex", 1)));
-        assertThat(roundTs1, not(samePropertyValuesAs(roundTs4)));
-        assertThat(roundTs2, not(samePropertyValuesAs(roundTs4)));
-        assertThat(roundTs3, samePropertyValuesAs(roundTs4));
+        var seats = gameController.getRound(roundId, botToken("token3"), ts(3L)).getSeats();
+        assertThat(seats, (Matcher) hasEntry(is("bot1"), hasEntry("lagoonIndex", 0)));
+        assertThat(seats, (Matcher) hasEntry(is("bot2"), hasEntry("lagoonIndex", 0)));
+        assertThat(seats, (Matcher) hasEntry(is("bot3"), hasEntry("lagoonIndex", 1)));
     }
 
     @Test

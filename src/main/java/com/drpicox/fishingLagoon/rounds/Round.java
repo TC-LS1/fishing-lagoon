@@ -22,7 +22,7 @@ public class Round {
     private TimeStamp nowTs;
     private String state;
     private BotId selfId;
-    private Map<String,Object> descriptor;
+    private RoundDescriptor descriptor;
     private Map<String,Object> seats;
     private Map<String,Object> commands;
     private Map<String,Object> scores;
@@ -88,10 +88,10 @@ public class Round {
         return selfId;
     }
 
-    public Map<String,Object> getDescriptor() {
+    public RoundDescriptor getDescriptor() {
         return descriptor;
     }
-    public Map<String,Object> getSeats() {
+    public Map<String, Object> getSeats() {
         return seats;
     }
     public Map<String, Object> getCommands() {
@@ -112,7 +112,7 @@ public class Round {
         scores = null;
 
         if (timeState.isDescriptorReadable()) {
-            descriptor = roundEngine.getDescriptor().toMap();
+            descriptor = roundEngine.getDescriptor();
         }
         if (timeState.isSeatsReadable()) {
             seats = roundEngine.getSeats().toMap();

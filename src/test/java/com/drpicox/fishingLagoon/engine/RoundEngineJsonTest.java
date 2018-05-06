@@ -54,7 +54,7 @@ public class RoundEngineJsonTest {
     public void round_json_descriptor() {
         var round = createRound();
 
-        var json = gson.toJson(round.getDescriptor().toMap());
+        var json = gson.toJson(round.getDescriptor());
         assertThat(json, jsonPath("$.maxDensity", 2.0));
         assertThat(json, jsonPath("$.weekCount", is(2)));
         assertThat(json, jsonPath("$.seatMilliseconds", 20));

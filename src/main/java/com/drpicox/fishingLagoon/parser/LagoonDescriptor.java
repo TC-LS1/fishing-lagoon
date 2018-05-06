@@ -14,10 +14,4 @@ public class LagoonDescriptor {
     public long getFishPopulation() {
         return fishPopulation;
     }
-
-    public Map<String,Object> toMap() {
-        var result = new LinkedHashMap<String,Object>();
-        result.put("fishPopulation", fishPopulation);
-        return result;
-    }
 }

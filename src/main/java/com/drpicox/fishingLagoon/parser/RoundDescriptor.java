@@ -4,11 +4,11 @@ import java.util.*;
 
 public class RoundDescriptor {
 
-    private long seatMilliseconds = 20000L;
-    private long commandMilliseconds = 20000L;
-    private long scoreMilliseconds = 20000L;
+    private long seatMilliseconds;
+    private long commandMilliseconds;
+    private long scoreMilliseconds;
     private double maxDensity;
-    private List<LagoonDescriptor> lagoonDescriptors;
+    private List<LagoonDescriptor> lagoons;
     private int weekCount;
 
     public RoundDescriptor(long seatMilliseconds, long commandMilliseconds, long scoreMilliseconds, double maxDensity, List<LagoonDescriptor> lagoonDescriptors, int weekCount) {
@@ -16,7 +16,7 @@ public class RoundDescriptor {
         this.commandMilliseconds = commandMilliseconds;
         this.seatMilliseconds = seatMilliseconds;
         this.maxDensity = maxDensity;
-        this.lagoonDescriptors = new ArrayList<>(lagoonDescriptors);
+        this.lagoons = new ArrayList<>(lagoonDescriptors);
         this.weekCount = weekCount;
     }
 
@@ -25,7 +25,7 @@ public class RoundDescriptor {
     }
 
     public LagoonDescriptor getLagoonDescriptor(int lagoonIndex) {
-        return lagoonDescriptors.get(lagoonIndex % lagoonDescriptors.size());
+        return lagoons.get(lagoonIndex % lagoons.size());
     }
 
     public long getSeatMilliseconds() {
@@ -48,23 +48,7 @@ public class RoundDescriptor {
         return weekCount;
     }
 
-    public Map<String,Object> toMap() {
-        var lagoons = new LinkedList<Object>();
-        for (var lagoon: lagoonDescriptors) {
-            lagoons.add(lagoon.toMap());
-        }
-
-        var result = new LinkedHashMap<String,Object>();
-        result.put("weekCount", weekCount);
-        result.put("maxDensity", maxDensity);
-        result.put("scoreMilliseconds", scoreMilliseconds);
-        result.put("commandMilliseconds", commandMilliseconds);
-        result.put("seatMilliseconds", seatMilliseconds);
-        result.put("lagoons", lagoons);
-        return result;
-    }
-
     public int getLagoonCount() {
-        return lagoonDescriptors.size();
+        return lagoons.size();
     }
 }
