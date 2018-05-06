@@ -1,5 +1,6 @@
 package com.drpicox.fishingLagoon;
 
+import com.drpicox.fishingLagoon.actions.Action;
 import com.drpicox.fishingLagoon.actions.ActionParser;
 import com.drpicox.fishingLagoon.admin.AdminToken;
 import com.drpicox.fishingLagoon.bots.BotId;
@@ -90,6 +91,8 @@ public class Bootstrap {
             var roundIdDeserializer = (JsonDeserializer<RoundId>) (json, type, context) -> new RoundId(json.getAsJsonPrimitive().getAsString());
             var timeStampSerializer = (JsonSerializer<TimeStamp>) (id, type, context) -> new JsonPrimitive(id.getMilliseconds());
             var timeStampDeserializer = (JsonDeserializer<TimeStamp>) (json, type, context) -> new TimeStamp(json.getAsJsonPrimitive().getAsLong());
+            var actionSerializer = (JsonSerializer<Action>) (action, type, context) -> new JsonPrimitive(action.toString());
+            var actionDeserializer = (JsonDeserializer<Action>) (json, type, context) -> getActionParser().parseAction(json.getAsJsonPrimitive().getAsString());
 
             gson = new GsonBuilder().setPrettyPrinting()
                     .registerTypeAdapter(TimeStamp.class, timeStampSerializer)
@@ -98,6 +101,8 @@ public class Bootstrap {
                     .registerTypeAdapter(BotId.class, botIdDeserializer)
                     .registerTypeAdapter(RoundId.class, roundIdSerializer)
                     .registerTypeAdapter(RoundId.class, roundIdDeserializer)
+                    .registerTypeAdapter(Action.class, actionSerializer)
+                    .registerTypeAdapter(Action.class, actionDeserializer)
                     .create();
         }
         return gson;

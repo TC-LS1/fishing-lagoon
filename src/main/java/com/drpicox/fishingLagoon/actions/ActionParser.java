@@ -22,8 +22,8 @@ public class ActionParser {
         return actions;
     }
 
-    private Action parseAction(String line) {
-        String[] parts = line.split(" +");
+    public Action parseAction(String actionText) {
+        String[] parts = actionText.split(" +");
         switch (parts[0]) {
             case "fish":
                 var fishValue = Long.parseLong(parts[1]);
