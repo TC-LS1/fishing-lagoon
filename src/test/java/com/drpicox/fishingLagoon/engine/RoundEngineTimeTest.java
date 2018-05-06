@@ -1,6 +1,7 @@
 package com.drpicox.fishingLagoon.engine;
 
 
+import com.drpicox.fishingLagoon.common.TimeStamp;
 import com.drpicox.fishingLagoon.parser.PropsParser;
 import com.drpicox.fishingLagoon.parser.RoundParser;
 import org.junit.Test;
@@ -106,6 +107,6 @@ public class RoundEngineTimeTest {
     private static RoundEngine parse(long startTs, String... roundTextLines) {
         var roundText = String.join("\n", roundTextLines);
         var roundDescriptor = new RoundParser(new PropsParser()).parse(roundText);
-        return new RoundEngine(startTs, roundDescriptor);
+        return new RoundEngine(new TimeStamp(startTs), roundDescriptor);
     }
 }

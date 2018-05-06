@@ -13,7 +13,7 @@ import static com.drpicox.fishingLagoon.engine.RoundPhaseState.SCORING;
 import static com.drpicox.fishingLagoon.engine.RoundPhaseState.SEATING;
 
 public class RoundEngine {
-    private long startTs;
+    private TimeStamp startTs;
     private RoundDescriptor roundDescriptor;
 
     private RoundPhaseState phaseState;
@@ -24,10 +24,6 @@ public class RoundEngine {
     private FishingLagoonRules rules;
 
     public RoundEngine(TimeStamp startTs, RoundDescriptor roundDescriptor) {
-        this(startTs.getMilliseconds(), roundDescriptor);
-    }
-
-    public RoundEngine(long startTs, RoundDescriptor roundDescriptor) {
         this.startTs = startTs;
         this.roundDescriptor = roundDescriptor;
 
@@ -45,12 +41,12 @@ public class RoundEngine {
 
     // time and round state
 
-    public long getStartTs() {
+    public TimeStamp getStartTs() {
         return startTs;
     }
 
     public RoundTimeState getTimeState(long ts) {
-        return RoundTimeState.get(ts - startTs, roundDescriptor);
+        return RoundTimeState.get(ts - startTs.getMilliseconds(), roundDescriptor);
     }
 
     public RoundTimeState getTimeState(TimeStamp ts) {

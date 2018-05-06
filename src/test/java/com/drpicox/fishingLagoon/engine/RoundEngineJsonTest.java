@@ -3,6 +3,7 @@ package com.drpicox.fishingLagoon.engine;
 
 import com.drpicox.fishingLagoon.actions.ActionParser;
 import com.drpicox.fishingLagoon.bots.BotId;
+import com.drpicox.fishingLagoon.common.TimeStamp;
 import com.drpicox.fishingLagoon.parser.GsonFactory;
 import com.drpicox.fishingLagoon.parser.PropsParser;
 import com.drpicox.fishingLagoon.parser.RoundParser;
@@ -118,6 +119,6 @@ public class RoundEngineJsonTest {
     private static RoundEngine parse(long startTs, String... roundTextLines) {
         var roundText = String.join("\n", roundTextLines);
         var roundDescriptor = new RoundParser(new PropsParser()).parse(roundText);
-        return new RoundEngine(startTs, roundDescriptor);
+        return new RoundEngine(new TimeStamp(startTs), roundDescriptor);
     }
 }

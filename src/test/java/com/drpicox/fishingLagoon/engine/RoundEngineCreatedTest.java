@@ -2,6 +2,7 @@ package com.drpicox.fishingLagoon.engine;
 
 
 import com.drpicox.fishingLagoon.bots.BotId;
+import com.drpicox.fishingLagoon.common.TimeStamp;
 import com.drpicox.fishingLagoon.parser.PropsParser;
 import com.drpicox.fishingLagoon.parser.RoundParser;
 import org.junit.Before;
@@ -81,7 +82,7 @@ public class RoundEngineCreatedTest {
     private static RoundEngine parse(String... roundTextLines) {
         var roundText = String.join("\n", roundTextLines);
         var roundDescriptor = new RoundParser(new PropsParser()).parse(roundText);
-        return new RoundEngine(0L, roundDescriptor);
+        return new RoundEngine(new TimeStamp(0L), roundDescriptor);
     }
 
     private static BotId bot(int id) {
