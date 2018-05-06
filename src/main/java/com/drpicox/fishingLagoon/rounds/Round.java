@@ -25,7 +25,7 @@ public class Round {
     private RoundDescriptor descriptor;
     private Map<String,Object> seats;
     private Map<String,Object> commands;
-    private Map<String,Object> scores;
+    private RoundScores scores;
 
     public Map<String,Object> toMap() {
         var result = new LinkedHashMap<String,Object>();
@@ -97,7 +97,7 @@ public class Round {
     public Map<String, Object> getCommands() {
         return commands;
     }
-    public Map<String, Object> getScores() {
+    public RoundScores getScores() {
         return scores;
     }
 
@@ -121,7 +121,7 @@ public class Round {
             commands = roundEngine.getCommands().toMap();
         }
         if (timeState.isScoresReadable()) {
-            scores = roundEngine.getScores(rules).toMap();
+            scores = roundEngine.getScores(rules);
         }
     }
 

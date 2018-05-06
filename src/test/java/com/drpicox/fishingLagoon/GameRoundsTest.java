@@ -11,6 +11,7 @@ import com.drpicox.fishingLagoon.rules.FishingLagoonRuleFishing;
 import com.drpicox.fishingLagoon.rules.FishingLagoonRuleProcreation;
 import com.drpicox.fishingLagoon.rules.FishingLagoonRules;
 import com.drpicox.fishingLagoon.rules.FishingLagoonSetupRuleFishPopulation;
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.hamcrest.Matcher;
 import org.junit.Before;
@@ -19,6 +20,7 @@ import org.junit.Test;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import static com.drpicox.fishingLagoon.JsonPathMatcher.jsonPath;
 import static com.drpicox.fishingLagoon.actions.Actions.fish;
 import static com.drpicox.fishingLagoon.actions.Actions.rest;
 import static java.util.Arrays.asList;
@@ -29,6 +31,7 @@ public class GameRoundsTest {
 
     private AdminToken adminToken;
     private TestBootstrap bootstrap;
+    private Gson gson;
     private GameController gameController;
 
     private static final long SEAT_MILLISECONDS = 20000L;
@@ -51,6 +54,7 @@ public class GameRoundsTest {
     public void instance_bootstrap() throws SQLException {
         adminToken = new AdminToken("admin123");
         bootstrap = new TestBootstrap(adminToken);
+        gson = bootstrap.getGson();
         gameController = bootstrap.getGameController();
 
         gameController.createBot(botToken("token1"), adminToken);
@@ -310,15 +314,11 @@ public class GameRoundsTest {
         gameController.commandBot(roundId, botToken("token2"), asList(fish(3), fish(4)), ts(SEAT_MILLISECONDS + 2L));
 
         var round = gameController.getRound(roundId, ts(SEAT_MILLISECONDS + COMMAND_MILLISECONDS));
-        var scores = round.getScores();
-        var lagoons = scores.get("lagoons");
-        var bots = scores.get("bots");
 
-        assertThat(lagoons, (Matcher) hasSize(1));
-        assertThat(lagoons, (Matcher) contains(hasEntry("fishPopulation", 1L)));
-        assertThat(bots, (Matcher) aMapWithSize(2));
-        assertThat(bots, (Matcher) hasEntry(is("bot1"), hasEntry("score", 3L)));
-        assertThat(bots, (Matcher) hasEntry(is("bot2"), hasEntry("score", 7L)));
+        var json = gson.toJson(round.getScores());
+        assertThat(json, jsonPath("$.lagoons[0].fishPopulation", 1));
+        assertThat(json, jsonPath("$.bots.bot1.score", 3));
+        assertThat(json, jsonPath("$.bots.bot2.score", 7));
     }
 
     @Test
@@ -342,12 +342,10 @@ public class GameRoundsTest {
         gameController.commandBot(roundId, botToken("token1"), asList(fish(1), fish(2)), ts(SEAT_MILLISECONDS + 0L));
 
         var round = gameController.getRound(roundId, ts(SEAT_MILLISECONDS + COMMAND_MILLISECONDS + SCORE_MILLISECONDS));
-        var scores = round.getScores();
 
-        assertThat(scores.get("lagoons"), (Matcher) hasSize(1));
-        assertThat(scores.get("lagoons"), (Matcher) contains(hasEntry("fishPopulation", 15L)));
-        assertThat(scores.get("bots"), (Matcher) aMapWithSize(1));
-        assertThat(scores.get("bots"), (Matcher) hasEntry(is("bot1"), hasEntry("score", 3L)));
+        var json = gson.toJson(round.getScores());
+        assertThat(json, jsonPath("$.lagoons[0].fishPopulation", 15));
+        assertThat(json, jsonPath("$.bots.bot1.score", 3));
     }
 
     @Test

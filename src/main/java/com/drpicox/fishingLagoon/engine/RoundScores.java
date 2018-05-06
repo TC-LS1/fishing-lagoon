@@ -3,75 +3,74 @@ package com.drpicox.fishingLagoon.engine;
 import com.drpicox.fishingLagoon.bots.BotId;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class RoundScores {
-    private Map<Integer, Long> fishPopulations = new HashMap<>();
-    private Map<BotId, Long> botScores = new HashMap<>();
+    private List<RoundLagoonScore> lagoons = new ArrayList<>();
+    private Map<BotId, RoundBotScore> bots = new HashMap<>();
 
     public RoundScores() {
     }
 
     public RoundScores(RoundScores sample) {
-        this.fishPopulations.putAll(sample.fishPopulations);
-        this.botScores.putAll(sample.botScores);
+        this.lagoons.addAll(sample.lagoons.stream().map(l -> new RoundLagoonScore(l)).collect(Collectors.toList()));
+        this.bots.putAll(sample.bots);
     }
-
-
+    
 
     // lagoons
 
     public int getLagoonCount() {
-        return fishPopulations.size();
+        return lagoons.size();
     }
 
     public Set<Integer> getLagoonIndices() {
-        return new HashSet<>(fishPopulations.keySet());
+        var result = new LinkedHashSet<Integer>();
+        for (int lagoonIndex = 0; lagoonIndex < getLagoonCount(); lagoonIndex++) {
+            result.add(lagoonIndex);
+        }
+        return result;
     }
 
     public long getFishPopulation(int lagoonIndex) {
-        return fishPopulations.getOrDefault(lagoonIndex, 0L);
+        if (lagoons.size() <= lagoonIndex) return 0L;
+        return lagoons.get(lagoonIndex).getFishPopulation();
     }
 
     void putFishPopulation(int lagoonIndex, long fishPopulation) {
-        fishPopulations.put(lagoonIndex, fishPopulation);
+        ensureLagoonCount(lagoonIndex);
+        lagoons.get(lagoonIndex).setFishPopulation(fishPopulation);
+    }
+
+    private void ensureLagoonCount(int lagoonIndex) {
+        while (lagoons.size() <= lagoonIndex) {
+            lagoons.add(new RoundLagoonScore());
+        }
     }
 
     // bots
 
     public int getBotCount() {
-        return botScores.size();
+        return bots.size();
     }
 
     public long getScore(BotId bot) {
-        return botScores.getOrDefault(bot, 0L);
+        if (bots.containsKey(bot)) return bots.get(bot).getScore();
+        return 0;
     }
 
     void putScore(BotId bot, long score) {
-        botScores.put(bot, score);
+        ensureBot(bot);
+        bots.get(bot).setScore(score);
+    }
+
+    private void ensureBot(BotId bot) {
+        if (!bots.containsKey(bot)) {
+            bots.put(bot, new RoundBotScore());
+        }
     }
 
     public Set<BotId> getBots() {
-        return new HashSet<>(botScores.keySet());
-    }
-
-    public Map<String,Object> toMap() {
-        var lagoons = new ArrayList<Object>();
-        for (int lagoonIndex = 0; lagoonIndex < getLagoonCount(); lagoonIndex++) {
-            var lagoonMap = new LinkedHashMap<String,Object>();
-            lagoonMap.put("fishPopulation", getFishPopulation(lagoonIndex));
-            lagoons.add(lagoonMap);
-        }
-
-        var bots = new HashMap<String,Object>();
-        for (var bot: getBots()) {
-            var botMap = new LinkedHashMap<String,Object>();
-            botMap.put("score", getScore(bot));
-            bots.put(bot.getValue(), botMap);
-        }
-
-        var result = new LinkedHashMap<String,Object>();
-        result.put("lagoons", lagoons);
-        result.put("bots", bots);
-        return result;
+        return new HashSet<>(bots.keySet());
     }
 }

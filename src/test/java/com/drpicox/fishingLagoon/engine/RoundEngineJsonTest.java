@@ -102,7 +102,7 @@ public class RoundEngineJsonTest {
         round.commandBot(bot(1), asList(fish(1), fish(2)));
         round.commandBot(bot(2), asList(rest(), fish(4)));
 
-        var json = gson.toJson(round.getScores(rules).toMap());
+        var json = gson.toJson(round.getScores(rules));
         assertThat(json, jsonPath("$.lagoons[0].fishPopulation", 9));
         assertThat(json, jsonPath("$.lagoons[1].fishPopulation", 225));
         assertThat(json, jsonPath("$.bots.bot1.score", 3));
