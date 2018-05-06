@@ -1,15 +1,12 @@
 package com.drpicox.fishingLagoon;
 
-import com.drpicox.fishingLagoon.actions.Action;
 import com.drpicox.fishingLagoon.actions.ActionParser;
 import com.drpicox.fishingLagoon.admin.AdminToken;
-import com.drpicox.fishingLagoon.bots.BotId;
 import com.drpicox.fishingLagoon.bots.BotsController;
 import com.drpicox.fishingLagoon.bots.BotsStore;
 import com.drpicox.fishingLagoon.common.IdGenerator;
-import com.drpicox.fishingLagoon.common.SequenceIdGenerator;
-import com.drpicox.fishingLagoon.common.TimeStamp;
 import com.drpicox.fishingLagoon.common.UuidIdGenerator;
+import com.drpicox.fishingLagoon.parser.GsonFactory;
 import com.drpicox.fishingLagoon.parser.PropsParser;
 import com.drpicox.fishingLagoon.parser.RoundParser;
 import com.drpicox.fishingLagoon.rounds.*;
@@ -22,8 +19,6 @@ import com.google.gson.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 
 import static java.util.Arrays.asList;
 
@@ -82,30 +77,12 @@ public class Bootstrap {
         return gameController;
     }
 
-    private Gson gson;
+    private GsonFactory gsonFactory;
     public Gson getGson() {
-        if (gson == null) {
-            var botIdSerializer = (JsonSerializer<BotId>) (id, type, context) -> new JsonPrimitive(id.getValue());
-            var botIdDeserializer = (JsonDeserializer<BotId>) (json, type, context) -> new BotId(json.getAsJsonPrimitive().getAsString());
-            var roundIdSerializer = (JsonSerializer<RoundId>) (id, type, context) -> new JsonPrimitive(id.getValue());
-            var roundIdDeserializer = (JsonDeserializer<RoundId>) (json, type, context) -> new RoundId(json.getAsJsonPrimitive().getAsString());
-            var timeStampSerializer = (JsonSerializer<TimeStamp>) (id, type, context) -> new JsonPrimitive(id.getMilliseconds());
-            var timeStampDeserializer = (JsonDeserializer<TimeStamp>) (json, type, context) -> new TimeStamp(json.getAsJsonPrimitive().getAsLong());
-            var actionSerializer = (JsonSerializer<Action>) (action, type, context) -> new JsonPrimitive(action.toString());
-            var actionDeserializer = (JsonDeserializer<Action>) (json, type, context) -> getActionParser().parseAction(json.getAsJsonPrimitive().getAsString());
-
-            gson = new GsonBuilder().setPrettyPrinting()
-                    .registerTypeAdapter(TimeStamp.class, timeStampSerializer)
-                    .registerTypeAdapter(TimeStamp.class, timeStampDeserializer)
-                    .registerTypeAdapter(BotId.class, botIdSerializer)
-                    .registerTypeAdapter(BotId.class, botIdDeserializer)
-                    .registerTypeAdapter(RoundId.class, roundIdSerializer)
-                    .registerTypeAdapter(RoundId.class, roundIdDeserializer)
-                    .registerTypeAdapter(Action.class, actionSerializer)
-                    .registerTypeAdapter(Action.class, actionDeserializer)
-                    .create();
+        if (gsonFactory == null) {
+            gsonFactory = new GsonFactory(getActionParser());
         }
-        return gson;
+        return gsonFactory.get();
     }
 
     private FishingLagoonRules fishingLagoonRules;

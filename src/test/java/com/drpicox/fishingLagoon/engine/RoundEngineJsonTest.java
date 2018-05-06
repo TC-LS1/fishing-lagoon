@@ -1,7 +1,9 @@
 package com.drpicox.fishingLagoon.engine;
 
 
+import com.drpicox.fishingLagoon.actions.ActionParser;
 import com.drpicox.fishingLagoon.bots.BotId;
+import com.drpicox.fishingLagoon.parser.GsonFactory;
 import com.drpicox.fishingLagoon.parser.PropsParser;
 import com.drpicox.fishingLagoon.parser.RoundParser;
 import com.drpicox.fishingLagoon.rules.FishingLagoonRuleFishing;
@@ -9,7 +11,6 @@ import com.drpicox.fishingLagoon.rules.FishingLagoonRuleProcreation;
 import com.drpicox.fishingLagoon.rules.FishingLagoonRules;
 import com.drpicox.fishingLagoon.rules.FishingLagoonSetupRuleFishPopulation;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -45,9 +46,8 @@ public class RoundEngineJsonTest {
 
     @Before
     public void make_gson() {
-        var builder = new GsonBuilder();
-        builder.setPrettyPrinting();
-        gson = builder.create();
+        var gsonFactory = new GsonFactory(new ActionParser());
+        gson = gsonFactory.get();
     }
 
     @Test
@@ -88,7 +88,7 @@ public class RoundEngineJsonTest {
         round.commandBot(bot(1), asList(fish(1), fish(2)));
         round.commandBot(bot(2), asList(rest(), fish(3)));
 
-        var json = gson.toJson(round.getCommands().toMap());
+        var json = gson.toJson(round.getCommands().getCommands());
         assertThat(json, jsonPath("$.bot1.actions", contains("fish 1", "fish 2")));
         assertThat(json, jsonPath("$.bot2.actions", contains("rest", "fish 3")));
     }

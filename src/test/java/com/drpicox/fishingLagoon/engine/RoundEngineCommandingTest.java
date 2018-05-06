@@ -32,8 +32,8 @@ public class RoundEngineCommandingTest {
         round.commandBot(bot(2), Arrays.asList(fish(3), fish(4)));
 
         var commands = round.getCommands();
-        assertThat(commands.get(bot(1)), contains(fish(1), fish(2)));
-        assertThat(commands.get(bot(2)), contains(fish(3), fish(4)));
+        assertThat(commands.getActions(bot(1)), contains(fish(1), fish(2)));
+        assertThat(commands.getActions(bot(2)), contains(fish(3), fish(4)));
         assertThat(commands.getAction(bot(1), 0), is(fish(1)));
         assertThat(commands.getAction(bot(1), 1), is(fish(2)));
         assertThat(commands.getAction(bot(2), 0), is(fish(3)));
@@ -52,7 +52,7 @@ public class RoundEngineCommandingTest {
         round.commandBot(bot(2), Arrays.asList(fish(3), fish(4)));
 
         var commands = round.getCommands();
-        assertThat(commands.get(bot(1)), contains(fish(1), fish(2)));
+        assertThat(commands.getActions(bot(1)), contains(fish(1), fish(2)));
         assertThat(commands.getBotsCount(), is(1));
         assertThat(commands.getBots(), containsInAnyOrder(bot(1)));
     }

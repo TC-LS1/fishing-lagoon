@@ -8,32 +8,36 @@ import java.util.*;
 
 public class RoundCommands {
 
+    private Map<BotId, RoundCommand> commands = new HashMap<>();
     private Map<BotId, List<Action>> botCommands = new HashMap<>();
 
-    RoundCommands() {
+    public RoundCommands() {
     }
 
     RoundCommands(RoundCommands sample) {
+        commands.putAll(sample.commands);
         botCommands.putAll(sample.botCommands);
     }
 
+    public Map<BotId, RoundCommand> getCommands() {
+        return commands;
+    }
+
     public Set<BotId> getBots() {
-        return new HashSet<>(botCommands.keySet());
+        return new HashSet<>(commands.keySet());
     }
 
     public Object getBotsCount() {
-        return botCommands.size();
+        return commands.size();
     }
 
-    public List<Action> get(BotId botId) {
-        return new ArrayList<>(botCommands.get(botId));
+    public List<Action> getActions(BotId botId) {
+        return commands.get(botId).getActions();
     }
 
     public Action getAction(BotId botId, int weekIndex) {
-        var botActions = botCommands.get(botId);
-        if (botActions == null) return RestAction.DEFAULT;
-
-        return botActions.get(weekIndex);
+        if (!commands.containsKey(botId)) return RestAction.DEFAULT;
+        return commands.get(botId).getAction(weekIndex);
     }
 
     public LagoonWeekCommandsView getLagoonWeekView(Integer lagoonIndex, RoundSeats seats, int weekIndex) {
@@ -41,27 +45,19 @@ public class RoundCommands {
     }
 
     boolean commandBot(BotId botId, List<Action> actions) {
-        botCommands.put(botId, new ArrayList<>(actions));
+        forceCommandBot(botId, actions);
         return true;
     }
 
-    public void forceCommandBot(BotId botId, List<Action> actions) {
-        botCommands.put(botId, new ArrayList<>(actions));
+    private void ensureBot(BotId botId) {
+        if (!commands.containsKey(botId)) {
+            commands.put(botId, new RoundCommand());
+        }
     }
 
-    public Map<String,Object> toMap() {
-        var result = new HashMap<String,Object>();
-        for (var bot: botCommands.keySet()) {
-            var actions = botCommands.get(bot);
-            var list = new ArrayList<String>();
-            for (var action: actions) {
-                list.add(action.toString());
-            }
-
-            var botMap = new LinkedHashMap<String,Object>();
-            botMap.put("actions", list);
-            result.put(bot.getValue(), botMap);
-        }
-        return result;
+    public void forceCommandBot(BotId botId, List<Action> actions) {
+        ensureBot(botId);
+        commands.get(botId).setActions(actions);
+        botCommands.put(botId, new ArrayList<>(actions));
     }
 }

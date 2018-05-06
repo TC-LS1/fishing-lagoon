@@ -3,10 +3,7 @@ package com.drpicox.fishingLagoon.rounds;
 import com.drpicox.fishingLagoon.bots.BotId;
 import com.drpicox.fishingLagoon.common.TimeOffset;
 import com.drpicox.fishingLagoon.common.TimeStamp;
-import com.drpicox.fishingLagoon.engine.RoundCommands;
-import com.drpicox.fishingLagoon.engine.RoundEngine;
-import com.drpicox.fishingLagoon.engine.RoundScores;
-import com.drpicox.fishingLagoon.engine.RoundSeats;
+import com.drpicox.fishingLagoon.engine.*;
 import com.drpicox.fishingLagoon.parser.RoundDescriptor;
 import com.drpicox.fishingLagoon.rules.FishingLagoonRules;
 
@@ -24,7 +21,7 @@ public class Round {
     private BotId selfId;
     private RoundDescriptor descriptor;
     private Map<String,Object> seats;
-    private Map<String,Object> commands;
+    private Map<BotId, RoundCommand> commands;
     private RoundScores scores;
 
     public Map<String,Object> toMap() {
@@ -94,7 +91,7 @@ public class Round {
     public Map<String, Object> getSeats() {
         return seats;
     }
-    public Map<String, Object> getCommands() {
+    public Map<BotId, RoundCommand> getCommands() {
         return commands;
     }
     public RoundScores getScores() {
@@ -118,7 +115,7 @@ public class Round {
             seats = roundEngine.getSeats().toMap();
         }
         if (timeState.isCommandsReadable()) {
-            commands = roundEngine.getCommands().toMap();
+            commands = roundEngine.getCommands().getCommands();
         }
         if (timeState.isScoresReadable()) {
             scores = roundEngine.getScores(rules);

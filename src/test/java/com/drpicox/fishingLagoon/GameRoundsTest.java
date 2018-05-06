@@ -192,12 +192,10 @@ public class GameRoundsTest {
         gameController.commandBot(roundId, botToken("token3"), asList(rest(), fish(5)), ts(SEAT_MILLISECONDS + 2L));
 
         var round = gameController.getRound(roundId, ts(SEAT_MILLISECONDS + COMMAND_MILLISECONDS ));
-        var commands = round.getCommands();
-
-        assertThat(commands, (Matcher) aMapWithSize(3));
-        assertThat(commands, (Matcher) hasEntry(is("bot1"), hasEntry(is("actions"), contains("fish 1", "fish 2"))));
-        assertThat(commands, (Matcher) hasEntry(is("bot2"), hasEntry(is("actions"), contains("fish 3", "fish 4"))));
-        assertThat(commands, (Matcher) hasEntry(is("bot3"), hasEntry(is("actions"), contains("rest", "fish 5"))));
+        var json = gson.toJson(round.getCommands());
+        assertThat(json, jsonPath("$.bot1.actions", contains("fish 1", "fish 2")));
+        assertThat(json, jsonPath("$.bot2.actions", contains("fish 3", "fish 4")));
+        assertThat(json, jsonPath("$.bot3.actions", contains("rest", "fish 5")));
     }
 
     @Test
@@ -209,10 +207,9 @@ public class GameRoundsTest {
         gameController.commandBot(roundId, botToken("token1"), asList(fish(3), fish(4)), ts(SEAT_MILLISECONDS + 1L));
 
         var round = gameController.getRound(roundId, ts(SEAT_MILLISECONDS + COMMAND_MILLISECONDS ));
-        var commands = round.getCommands();
 
-        assertThat(commands, (Matcher) aMapWithSize(1));
-        assertThat(commands, (Matcher) hasEntry(is("bot1"), hasEntry(is("actions"), contains("fish 3", "fish 4"))));
+        var json = gson.toJson(round.getCommands());
+        assertThat(json, jsonPath("$.bot1.actions", contains("fish 3", "fish 4")));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -237,10 +234,9 @@ public class GameRoundsTest {
         } catch (IllegalArgumentException iea) {}
 
         var round = gameController.getRound(roundId, ts(SEAT_MILLISECONDS + COMMAND_MILLISECONDS ));
-        var commands = round.getCommands();
 
-        assertThat(commands, (Matcher) aMapWithSize(1));
-        assertThat(commands, (Matcher) hasEntry(is("bot1"), hasEntry(is("actions"), contains("fish 1", "fish 2"))));
+        var json = gson.toJson(round.getCommands());
+        assertThat(json, jsonPath("$.bot1.actions", contains("fish 1", "fish 2")));
     }
 
     @Test(expected = IllegalStateException.class)
@@ -295,10 +291,9 @@ public class GameRoundsTest {
         gameController.commandBot(roundId, botToken("token1"), actions, ts(SEAT_MILLISECONDS + 0L));
 
         var round = gameController.getRound(roundId, ts(SEAT_MILLISECONDS + COMMAND_MILLISECONDS));
-        var commands = round.getCommands();
 
-        assertThat(commands, (Matcher) aMapWithSize(1));
-        assertThat(commands, (Matcher) hasEntry(is("bot1"), hasEntry(is("actions"), hasSize(100))));
+        var json = gson.toJson(round.getCommands());
+        assertThat(json, jsonPath("$.bot1.actions", hasSize(100)));
     }
 
     // SCORES
