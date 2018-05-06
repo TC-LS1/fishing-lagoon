@@ -7,14 +7,12 @@ import java.util.*;
 public class RoundSeats {
 
     private Map<BotId, RoundSeat> seats = new HashMap<>();
-    private Map<BotId, Integer> botSeats = new HashMap<>();
 
     public RoundSeats() {
     }
 
     RoundSeats(RoundSeats sample) {
         seats.putAll(sample.seats);
-        botSeats.putAll(sample.botSeats);
     }
 
     public Map<BotId, RoundSeat> getSeats() {
@@ -73,14 +71,12 @@ public class RoundSeats {
 
         ensureBot(botId);
         seats.get(botId).setLagoonIndex(lagoonIndex);
-        botSeats.put(botId, lagoonIndex);
         return true;
     }
 
     public void forceSeatBot(BotId botId, int lagoonIndex) {
         ensureBot(botId);
         seats.get(botId).setLagoonIndex(lagoonIndex);
-        botSeats.put(botId, lagoonIndex);
     }
 
     private void ensureBot(BotId botId) {

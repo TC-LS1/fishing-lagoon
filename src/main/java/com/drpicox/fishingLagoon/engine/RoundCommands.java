@@ -9,14 +9,12 @@ import java.util.*;
 public class RoundCommands {
 
     private Map<BotId, RoundCommand> commands = new HashMap<>();
-    private Map<BotId, List<Action>> botCommands = new HashMap<>();
 
     public RoundCommands() {
     }
 
     RoundCommands(RoundCommands sample) {
         commands.putAll(sample.commands);
-        botCommands.putAll(sample.botCommands);
     }
 
     public Map<BotId, RoundCommand> getCommands() {
@@ -58,6 +56,5 @@ public class RoundCommands {
     public void forceCommandBot(BotId botId, List<Action> actions) {
         ensureBot(botId);
         commands.get(botId).setActions(actions);
-        botCommands.put(botId, new ArrayList<>(actions));
     }
 }
