@@ -131,10 +131,11 @@ public class GameRoundsTest {
         gameController.seatBot(roundId, botToken("token2"), 0, ts(2L));
         gameController.seatBot(roundId, botToken("token3"), 1, ts(3L));
 
-        var seats = gameController.getRound(roundId, botToken("token3"), ts(3L)).getSeats();
-        assertThat(seats, (Matcher) hasEntry(is("bot1"), hasEntry("lagoonIndex", 0)));
-        assertThat(seats, (Matcher) hasEntry(is("bot2"), hasEntry("lagoonIndex", 0)));
-        assertThat(seats, (Matcher) hasEntry(is("bot3"), hasEntry("lagoonIndex", 1)));
+        var round = gameController.getRound(roundId, botToken("token3"), ts(3L));
+        var json = gson.toJson(round.getSeats());
+        assertThat(json, jsonPath("$.bot1.lagoonIndex", 0));
+        assertThat(json, jsonPath("$.bot2.lagoonIndex", 0));
+        assertThat(json, jsonPath("$.bot3.lagoonIndex", 1));
     }
 
     @Test
@@ -145,10 +146,10 @@ public class GameRoundsTest {
         gameController.seatBot(roundId, botToken("token2"), 0, ts(2L));
         gameController.seatBot(roundId, botToken("token2"), 1, ts(3L));
 
-        var seats = gameController.getRound(roundId, ts(4L)).getSeats();
-        assertThat(seats, (Matcher) aMapWithSize(2));
-        assertThat(seats, (Matcher) hasEntry(is("bot1"), hasEntry("lagoonIndex", 0)));
-        assertThat(seats, (Matcher) hasEntry(is("bot2"), hasEntry("lagoonIndex", 1)));
+        var round = gameController.getRound(roundId, ts(4L));
+        var json = gson.toJson(round.getSeats());
+        assertThat(json, jsonPath("$.bot1.lagoonIndex", 0));
+        assertThat(json, jsonPath("$.bot2.lagoonIndex", 1));
     }
 
     @Test(expected = IllegalArgumentException.class)

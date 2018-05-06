@@ -73,7 +73,7 @@ public class RoundEngineJsonTest {
         round.seatBot(bot(3), 1);
         round.seatBot(bot(2), 1);
 
-        var json = gson.toJson(round.getSeats().toMap());
+        var json = gson.toJson(round.getSeats().getSeats());
         assertThat(json, jsonPath("$.bot1.lagoonIndex", 0));
         assertThat(json, jsonPath("$.bot2.lagoonIndex", 1));
         assertThat(json, jsonPath("$.bot3.lagoonIndex", 1));

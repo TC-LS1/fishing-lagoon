@@ -6,35 +6,44 @@ import java.util.*;
 
 public class RoundSeats {
 
+    private Map<BotId, RoundSeat> seats = new HashMap<>();
     private Map<BotId, Integer> botSeats = new HashMap<>();
 
     public RoundSeats() {
     }
 
     RoundSeats(RoundSeats sample) {
+        seats.putAll(sample.seats);
         botSeats.putAll(sample.botSeats);
     }
 
+    public Map<BotId, RoundSeat> getSeats() {
+        return seats;
+    }
 
     public int getBotCount() {
-        return botSeats.size();
+        return seats.size();
     }
 
     public Set<BotId> getBots() {
-        return new HashSet<>(botSeats.keySet());
+        return new HashSet<>(seats.keySet());
     }
 
 
     public Set<Integer> getLagoonIndices() {
-        return new HashSet<>(botSeats.values());
+        var result = new HashSet<Integer>();
+        for (var seat: seats.values()) {
+            result.add(seat.getLagoonIndex());
+        }
+        return result;
     }
 
 
     public Set<BotId> getLagoonBots(int lagoonIndex) {
         Set<BotId> result = new HashSet<>();
-        for (var bot: botSeats.keySet()) {
-            var botSeat = botSeats.get(bot);
-            if (botSeat == lagoonIndex) {
+        for (var bot: seats.keySet()) {
+            var botLagoonIndex = seats.get(bot).getLagoonIndex();
+            if (botLagoonIndex == lagoonIndex) {
                 result.add(bot);
             }
         }
@@ -42,15 +51,15 @@ public class RoundSeats {
     }
 
     public int getBotSeat(BotId botId) {
-        var botSeat = botSeats.get(botId);
+        var botSeat = seats.get(botId);
         if (botSeat == null) return -1;
 
-        return botSeat;
+        return botSeat.getLagoonIndex();
     }
 
     public int getLagoonCount(BotId botId, double maxDensity) {
         var botCount = getBotCount();
-        var plusOne = botId == null || botSeats.containsKey(botId) ? 0 : 1;
+        var plusOne = botId == null || seats.containsKey(botId) ? 0 : 1;
         var result = (int)Math.ceil((botCount + plusOne) / maxDensity);
         return result;
     }
@@ -62,21 +71,21 @@ public class RoundSeats {
 
         if (lagoonIndex >= lagoonCount) return false;
 
+        ensureBot(botId);
+        seats.get(botId).setLagoonIndex(lagoonIndex);
         botSeats.put(botId, lagoonIndex);
         return true;
     }
 
     public void forceSeatBot(BotId botId, int lagoonIndex) {
+        ensureBot(botId);
+        seats.get(botId).setLagoonIndex(lagoonIndex);
         botSeats.put(botId, lagoonIndex);
     }
 
-    public Map<String,Object> toMap() {
-        var result = new HashMap<String,Object>();
-        for (var bot: botSeats.keySet()) {
-            var seat = new LinkedHashMap<String, Object>();
-            seat.put("lagoonIndex", botSeats.get(bot));
-            result.put(bot.getValue(), seat);
+    private void ensureBot(BotId botId) {
+        if (!seats.containsKey(botId)) {
+            seats.put(botId, new RoundSeat());
         }
-        return result;
     }
 }
