@@ -64,28 +64,7 @@ public class RoundDescriptor {
         return result;
     }
 
-    @Override
-    public String toString() {
-        StringBuilder roundLagoons = new StringBuilder("lagoons");
-        StringBuilder lagoons = new StringBuilder();
-        String coma = "=";
-        for (int lagoonIndex = 0; lagoonIndex < lagoonDescriptors.size(); lagoonIndex++) {
-            String lagoonKey = "lagoon" + lagoonIndex;
-            roundLagoons.append(coma).append(lagoonKey);
-            coma = ",";
-            var lagoonLines = getLagoonDescriptor(lagoonIndex).toString().split("\n");
-            for (var lagoonLine: lagoonLines) {
-                lagoons.append(lagoonKey).append(".").append(lagoonLine).append("\n");
-            }
-        }
-
-        StringBuilder round = new StringBuilder();
-        round.append("weekCount=").append(weekCount).append("\n");
-        round.append("maxDensity=").append(maxDensity).append("\n");
-        round.append("scoreMilliseconds=").append(scoreMilliseconds).append("\n");
-        round.append("commandMilliseconds=").append(commandMilliseconds).append("\n");
-        round.append("seatMilliseconds=").append(seatMilliseconds).append("\n");
-        round.append(roundLagoons).append("\n").append(lagoons);
-        return round.toString();
+    public int getLagoonCount() {
+        return lagoonDescriptors.size();
     }
 }

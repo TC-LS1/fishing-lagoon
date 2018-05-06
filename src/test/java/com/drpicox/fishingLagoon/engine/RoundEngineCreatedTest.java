@@ -4,12 +4,20 @@ package com.drpicox.fishingLagoon.engine;
 import com.drpicox.fishingLagoon.bots.BotId;
 import com.drpicox.fishingLagoon.parser.PropsParser;
 import com.drpicox.fishingLagoon.parser.RoundParser;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 public class RoundEngineCreatedTest {
+
+    private RoundParser roundParser;
+
+    @Before
+    public void prepare() {
+        roundParser = new RoundParser(new PropsParser());
+    }
 
     @Test
     public void round_created_gets_description() {
@@ -41,9 +49,9 @@ public class RoundEngineCreatedTest {
                 "lagoonSmall.fishPopulation=5",
                 "lagoonBig.fishPopulation=100");
 
-        var roundText0 = round0.getDescriptor().toString();
+        var roundText0 = roundParser.stringify(round0.getDescriptor());
         var round1 = parse(roundText0);
-        var roundText1 = round1.getDescriptor().toString();
+        var roundText1 = roundParser.stringify(round1.getDescriptor());
 
         assertThat(roundText1, containsString("maxDensity=4"));
         assertThat(roundText1, containsString("weekCount=10"));

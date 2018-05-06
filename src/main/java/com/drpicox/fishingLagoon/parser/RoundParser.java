@@ -17,6 +17,34 @@ public class RoundParser {
         return state.getRound();
     }
 
+    public String stringify(RoundDescriptor round) {
+        StringBuilder roundLagoons = new StringBuilder("lagoons");
+        StringBuilder lagoons = new StringBuilder();
+        String coma = "=";
+        for (int lagoonIndex = 0; lagoonIndex < round.getLagoonCount(); lagoonIndex++) {
+            String lagoonKey = "lagoon" + lagoonIndex;
+            roundLagoons.append(coma).append(lagoonKey);
+            coma = ",";
+            var lagoonLines = stringify(round.getLagoonDescriptor(lagoonIndex)).split("\n");
+            for (var lagoonLine: lagoonLines) {
+                lagoons.append(lagoonKey).append(".").append(lagoonLine).append("\n");
+            }
+        }
+
+        StringBuilder roundText = new StringBuilder();
+        roundText.append("weekCount=").append(round.getWeekCount()).append("\n");
+        roundText.append("maxDensity=").append(round.getMaxDensity()).append("\n");
+        roundText.append("scoreMilliseconds=").append(round.getScoreMilliseconds()).append("\n");
+        roundText.append("commandMilliseconds=").append(round.getCommandMilliseconds()).append("\n");
+        roundText.append("seatMilliseconds=").append(round.getSeatMilliseconds()).append("\n");
+        roundText.append(roundLagoons).append("\n").append(lagoons);
+        return roundText.toString();
+    }
+
+    private String stringify(LagoonDescriptor lagoon) {
+        return "fishPopulation=" + lagoon.getFishPopulation();
+    }
+
     private static class State {
         final Props props;
         final Map<String, LagoonDescriptor> lagoonDescriptorMap = new HashMap<>();

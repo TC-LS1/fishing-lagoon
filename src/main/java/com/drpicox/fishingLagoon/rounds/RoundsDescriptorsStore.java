@@ -26,7 +26,7 @@ public class RoundsDescriptorsStore {
     }
 
     public void create(Round round, RoundDescriptor roundDescriptor) throws SQLException {
-        var descriptorText = roundDescriptor.toString();
+        var descriptorText = roundParser.stringify(roundDescriptor);
         if (descriptorText.length() > 4000) {
             throw new IllegalArgumentException("Round description too long");
         }

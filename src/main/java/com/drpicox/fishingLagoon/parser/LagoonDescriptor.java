@@ -20,9 +20,4 @@ public class LagoonDescriptor {
         result.put("fishPopulation", fishPopulation);
         return result;
     }
-
-    @Override
-    public String toString() {
-        return "fishPopulation=" + fishPopulation;
-    }
 }
