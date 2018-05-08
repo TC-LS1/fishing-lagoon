@@ -21,6 +21,10 @@ public class TimeStamp implements Comparable<TimeStamp> {
         return new TimeStamp(this.milliseconds + to.getMilliseconds());
     }
 
+    public TimeOffset getOffsetFrom(TimeStamp originTs) {
+        return new TimeOffset(milliseconds - originTs.milliseconds);
+    }
+
     @Override
     public int compareTo(TimeStamp o) {
         return Long.compare(milliseconds, o.milliseconds);

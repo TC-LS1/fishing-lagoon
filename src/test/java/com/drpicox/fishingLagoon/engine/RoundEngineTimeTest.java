@@ -23,8 +23,8 @@ public class RoundEngineTimeTest {
     public void round_time_state_created() {
         var round = createRound();
 
-        var state0 = round.getTimeState(0L);
-        var state9 = round.getTimeState(9L);
+        var state0 = round.getTimeState(ts(0L));
+        var state9 = round.getTimeState(ts(9L));
 
         assertThat(state0, is(CREATED));
         assertThat(state9, is(CREATED));
@@ -40,8 +40,8 @@ public class RoundEngineTimeTest {
     public void round_time_state_seating() {
         var round = createRound();
 
-        var state10 = round.getTimeState(10L);
-        var state29 = round.getTimeState(29L);
+        var state10 = round.getTimeState(ts(10L));
+        var state29 = round.getTimeState(ts(29L));
 
         assertThat(state10, is(SEATING));
         assertThat(state29, is(SEATING));
@@ -57,8 +57,8 @@ public class RoundEngineTimeTest {
     public void round_time_state_commanding() {
         var round = createRound();
 
-        var state30 = round.getTimeState(30L);
-        var state59 = round.getTimeState(59L);
+        var state30 = round.getTimeState(ts(30L));
+        var state59 = round.getTimeState(ts(59L));
 
         assertThat(state30, is(COMMANDING));
         assertThat(state59, is(COMMANDING));
@@ -74,8 +74,8 @@ public class RoundEngineTimeTest {
     public void round_time_state_scoring() {
         var round = createRound();
 
-        var state60 = round.getTimeState(60L);
-        var state99 = round.getTimeState(99L);
+        var state60 = round.getTimeState(ts(60L));
+        var state99 = round.getTimeState(ts(99L));
 
         assertThat(state60, is(SCORING));
         assertThat(state99, is(SCORING));
@@ -91,8 +91,8 @@ public class RoundEngineTimeTest {
     public void round_time_state_finished() {
         var round = createRound();
 
-        var state100 = round.getTimeState(100L);
-        var state5000 = round.getTimeState(5000L);
+        var state100 = round.getTimeState(ts(100L));
+        var state5000 = round.getTimeState(ts(5000L));
 
         assertThat(state100, is(FINISHED));
         assertThat(state5000, is(FINISHED));
@@ -108,5 +108,9 @@ public class RoundEngineTimeTest {
         var roundText = String.join("\n", roundTextLines);
         var roundDescriptor = new RoundParser(new PropsParser()).parse(roundText);
         return new RoundEngine(new TimeStamp(startTs), roundDescriptor);
+    }
+
+    private static TimeStamp ts(long milliseconds) {
+        return new TimeStamp(milliseconds);
     }
 }

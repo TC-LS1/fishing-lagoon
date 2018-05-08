@@ -2,6 +2,7 @@ package com.drpicox.fishingLagoon.engine;
 
 import com.drpicox.fishingLagoon.actions.Action;
 import com.drpicox.fishingLagoon.bots.BotId;
+import com.drpicox.fishingLagoon.common.TimeOffset;
 import com.drpicox.fishingLagoon.common.TimeStamp;
 import com.drpicox.fishingLagoon.parser.RoundDescriptor;
 import com.drpicox.fishingLagoon.rules.FishingLagoonRules;
@@ -14,6 +15,7 @@ import static com.drpicox.fishingLagoon.engine.RoundPhaseState.SEATING;
 
 public class RoundEngine {
     private TimeStamp startTs;
+    private TimeStamp endTs;
     private RoundDescriptor roundDescriptor;
 
     private RoundPhaseState phaseState;
@@ -25,6 +27,7 @@ public class RoundEngine {
 
     public RoundEngine(TimeStamp startTs, RoundDescriptor roundDescriptor) {
         this.startTs = startTs;
+        this.endTs = startTs.plus(roundDescriptor.getTotalTime());
         this.roundDescriptor = roundDescriptor;
 
         phaseState = SEATING;
@@ -41,16 +44,8 @@ public class RoundEngine {
 
     // time and round state
 
-    public TimeStamp getStartTs() {
-        return startTs;
-    }
-
-    public RoundTimeState getTimeState(long ts) {
-        return RoundTimeState.get(ts - startTs.getMilliseconds(), roundDescriptor);
-    }
-
     public RoundTimeState getTimeState(TimeStamp ts) {
-        return getTimeState(ts.getMilliseconds());
+        return RoundTimeState.get(ts.getOffsetFrom(startTs), roundDescriptor);
     }
 
     // round seats

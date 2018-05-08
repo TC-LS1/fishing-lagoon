@@ -1,5 +1,7 @@
 package com.drpicox.fishingLagoon.parser;
 
+import com.drpicox.fishingLagoon.common.TimeOffset;
+
 import java.util.*;
 
 public class RoundDescriptor {
@@ -50,5 +52,9 @@ public class RoundDescriptor {
 
     public int getLagoonCount() {
         return lagoons.size();
+    }
+
+    public TimeOffset getTotalTime() {
+        return new TimeOffset(getTotalMilliseconds());
     }
 }

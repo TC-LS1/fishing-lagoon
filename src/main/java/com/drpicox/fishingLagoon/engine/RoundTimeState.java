@@ -1,5 +1,6 @@
 package com.drpicox.fishingLagoon.engine;
 
+import com.drpicox.fishingLagoon.common.TimeOffset;
 import com.drpicox.fishingLagoon.parser.RoundDescriptor;
 
 public enum RoundTimeState {
@@ -54,7 +55,8 @@ public enum RoundTimeState {
         isAcceptingCommands = accepting.equals("commands");
     }
 
-    static RoundTimeState get(long milliseconds, RoundDescriptor roundDescriptor) {
+    static RoundTimeState get(TimeOffset offset, RoundDescriptor roundDescriptor) {
+        var milliseconds = offset.getMilliseconds();
         var seatMilliseconds = roundDescriptor.getSeatMilliseconds();
         var commandMilliseconds = roundDescriptor.getCommandMilliseconds();
         var scoreMilliseconds = roundDescriptor.getScoreMilliseconds();
