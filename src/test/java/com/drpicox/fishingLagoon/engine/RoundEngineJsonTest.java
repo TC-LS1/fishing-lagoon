@@ -74,7 +74,7 @@ public class RoundEngineJsonTest {
         round.seatBot(bot(3), 1);
         round.seatBot(bot(2), 1);
 
-        var json = gson.toJson(round.getSeats().getSeats());
+        var json = gson.toJson(round.getSeats());
         assertThat(json, jsonPath("$.bot1.lagoonIndex", 0));
         assertThat(json, jsonPath("$.bot2.lagoonIndex", 1));
         assertThat(json, jsonPath("$.bot3.lagoonIndex", 1));
@@ -89,7 +89,7 @@ public class RoundEngineJsonTest {
         round.commandBot(bot(1), asList(fish(1), fish(2)));
         round.commandBot(bot(2), asList(rest(), fish(3)));
 
-        var json = gson.toJson(round.getCommands().getCommands());
+        var json = gson.toJson(round.getCommands());
         assertThat(json, jsonPath("$.bot1.actions", contains("fish 1", "fish 2")));
         assertThat(json, jsonPath("$.bot2.actions", contains("rest", "fish 3")));
     }
