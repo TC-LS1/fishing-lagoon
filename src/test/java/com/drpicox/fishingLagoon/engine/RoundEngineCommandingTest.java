@@ -5,6 +5,7 @@ import com.drpicox.fishingLagoon.bots.BotId;
 import com.drpicox.fishingLagoon.common.TimeStamp;
 import com.drpicox.fishingLagoon.parser.PropsParser;
 import com.drpicox.fishingLagoon.parser.RoundParser;
+import com.drpicox.fishingLagoon.rounds.RoundId;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -58,16 +59,6 @@ public class RoundEngineCommandingTest {
         assertThat(commands.getBots(), containsInAnyOrder(bot(1)));
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void round_commanding_before_seat_throws() {
-        var round = createRound();
-
-        round.seatBot(bot(1), 0);
-        round.commandBot(bot(1), Arrays.asList(fish(1), fish(2)));
-
-        round.seatBot(bot(2), 0);
-    }
-
     @Test(expected = IllegalArgumentException.class)
     public void round_commanding_requires_exact_size_list() {
         var round = createRound();
@@ -79,7 +70,7 @@ public class RoundEngineCommandingTest {
     private static RoundEngine parse(String... roundTextLines) {
         var roundText = String.join("\n", roundTextLines);
         var roundDescriptor = new RoundParser(new PropsParser()).parse(roundText);
-        return new RoundEngine(new TimeStamp(0L), roundDescriptor);
+        return new RoundEngine(new RoundId("r0"), new TimeStamp(0L), roundDescriptor);
     }
 
     private static BotId bot(int n) {

@@ -7,6 +7,7 @@ import com.drpicox.fishingLagoon.common.TimeStamp;
 import com.drpicox.fishingLagoon.parser.GsonFactory;
 import com.drpicox.fishingLagoon.parser.PropsParser;
 import com.drpicox.fishingLagoon.parser.RoundParser;
+import com.drpicox.fishingLagoon.rounds.RoundId;
 import com.drpicox.fishingLagoon.rules.FishingLagoonRuleFishing;
 import com.drpicox.fishingLagoon.rules.FishingLagoonRuleProcreation;
 import com.drpicox.fishingLagoon.rules.FishingLagoonRules;
@@ -119,6 +120,6 @@ public class RoundEngineJsonTest {
     private static RoundEngine parse(long startTs, String... roundTextLines) {
         var roundText = String.join("\n", roundTextLines);
         var roundDescriptor = new RoundParser(new PropsParser()).parse(roundText);
-        return new RoundEngine(new TimeStamp(startTs), roundDescriptor);
+        return new RoundEngine(new RoundId("r0"), new TimeStamp(startTs), roundDescriptor);
     }
 }

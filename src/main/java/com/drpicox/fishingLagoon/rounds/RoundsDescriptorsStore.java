@@ -47,7 +47,7 @@ public class RoundsDescriptorsStore {
                 if (!rs.next()) return null;
                 var descriptorText = rs.getString("descriptorText");
                 var roundDescriptor = roundParser.parse(descriptorText);
-                var roundEngine = new RoundEngine(round.getStartTs(), roundDescriptor);
+                var roundEngine = new RoundEngine(round.getId(), round.getStartTs(), roundDescriptor);
                 return roundEngine;
             }
         }

@@ -5,6 +5,7 @@ import com.drpicox.fishingLagoon.bots.BotId;
 import com.drpicox.fishingLagoon.common.TimeStamp;
 import com.drpicox.fishingLagoon.parser.PropsParser;
 import com.drpicox.fishingLagoon.parser.RoundParser;
+import com.drpicox.fishingLagoon.rounds.RoundId;
 import com.drpicox.fishingLagoon.rules.FishingLagoonRuleFishing;
 import com.drpicox.fishingLagoon.rules.FishingLagoonRuleProcreation;
 import com.drpicox.fishingLagoon.rules.FishingLagoonSetupRuleFishPopulation;
@@ -152,29 +153,10 @@ public class RoundEngineScoringTest {
         assertThat(scores.getScore(bot(3)), is(1L));
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void round_scoring_before_comanding_throws() {
-        var round = createRound();
-        round.seatBot(bot(1), 0);
-
-        round.getScores(rules);
-
-        round.commandBot(bot(1), asList(fish(1), fish(2)));
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void round_scoring_before_seating_throws() {
-        var round = createRound();
-
-        round.getScores(rules);
-
-        round.seatBot(bot(1), 0);
-    }
-
     private static RoundEngine parse(String... roundTextLines) {
         var roundText = String.join("\n", roundTextLines);
         var roundDescriptor = new RoundParser(new PropsParser()).parse(roundText);
-        return new RoundEngine(new TimeStamp(0L), roundDescriptor);
+        return new RoundEngine(new RoundId("r0"), new TimeStamp(0L), roundDescriptor);
     }
 
     private static BotId bot(int n) {

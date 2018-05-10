@@ -2,57 +2,62 @@ package com.drpicox.fishingLagoon.engine;
 
 import com.drpicox.fishingLagoon.actions.Action;
 import com.drpicox.fishingLagoon.bots.BotId;
-import com.drpicox.fishingLagoon.common.TimeOffset;
 import com.drpicox.fishingLagoon.common.TimeStamp;
 import com.drpicox.fishingLagoon.parser.RoundDescriptor;
+import com.drpicox.fishingLagoon.rounds.RoundId;
 import com.drpicox.fishingLagoon.rules.FishingLagoonRules;
 
 import java.util.List;
 
-import static com.drpicox.fishingLagoon.engine.RoundPhaseState.COMMANDING;
-import static com.drpicox.fishingLagoon.engine.RoundPhaseState.SCORING;
-import static com.drpicox.fishingLagoon.engine.RoundPhaseState.SEATING;
-
 public class RoundEngine {
+    private RoundId id;
     private TimeStamp startTs;
     private TimeStamp endTs;
-    private RoundDescriptor roundDescriptor;
 
-    private RoundPhaseState phaseState;
+    private RoundDescriptor descriptor;
     private RoundSeats seats;
     private RoundCommands commands;
     private RoundScores scores;
 
-    private FishingLagoonRules rules;
+    private TimeStamp nowTs;
+    private RoundTimeState state;
+    private BotId selfId;
 
-    public RoundEngine(TimeStamp startTs, RoundDescriptor roundDescriptor) {
+    public RoundEngine(RoundId id, TimeStamp startTs, RoundDescriptor descriptor) {
+        this.id = id;
         this.startTs = startTs;
-        this.endTs = startTs.plus(roundDescriptor.getTotalTime());
-        this.roundDescriptor = roundDescriptor;
+        this.endTs = startTs.plus(descriptor.getTotalTime());
+        this.descriptor = descriptor;
 
-        phaseState = SEATING;
         seats = new RoundSeats();
         commands = new RoundCommands();
         scores = null; // computed under demand
     }
 
+    // Current information
+
+    public void setupNow(TimeStamp nowTs, BotId selfId) {
+        this.nowTs = nowTs;
+        this.selfId = selfId;
+
+        this.state = getTimeState(nowTs);
+    }
+
     // descriptor
 
     public RoundDescriptor getDescriptor() {
-        return roundDescriptor;
+        return descriptor;
     }
 
     // time and round state
 
     public RoundTimeState getTimeState(TimeStamp ts) {
-        return RoundTimeState.get(ts.getOffsetFrom(startTs), roundDescriptor);
+        return RoundTimeState.get(ts.getOffsetFrom(startTs), descriptor);
     }
 
     // round seats
 
     public boolean seatBot(BotId botId, int lagoonIndex) {
-        phaseState.verifySeat();
-
         return seats.seatBot(botId, lagoonIndex, getLagoonCount(botId));
     }
 
@@ -72,7 +77,7 @@ public class RoundEngine {
     }
 
     public int getLagoonCount(BotId botId) {
-        var maxDensity = roundDescriptor.getMaxDensity();
+        var maxDensity = descriptor.getMaxDensity();
         var lagoonCount = seats.getLagoonCount(botId, maxDensity);
         return lagoonCount;
     }
@@ -81,8 +86,6 @@ public class RoundEngine {
 
     public boolean commandBot(BotId botId, List<Action> actions) {
         if (actions.size() != getWeekCount()) throw new IllegalArgumentException("Actions length must match weekCount");
-        phaseState.verifyCommand();
-        phaseState = COMMANDING;
 
         var lagoonIndex = seats.getBotSeat(botId);
         if (lagoonIndex == -1) return false;
@@ -91,7 +94,7 @@ public class RoundEngine {
     }
 
     int getWeekCount() {
-        return roundDescriptor.getWeekCount();
+        return descriptor.getWeekCount();
     }
 
     public void forceCommandBot(BotId botId, List<Action> actions) {
@@ -111,14 +114,6 @@ public class RoundEngine {
     // scores
 
     public RoundScores getScores(FishingLagoonRules rules) {
-        phaseState = SCORING;
-
-        // force recompute if rules change, and save new rules
-        if (this.rules != rules) {
-            this.rules = rules;
-            scores = null;
-        }
-
         // compute if not computed, and save
         if (scores == null) {
             scores = rules.score(this);
