@@ -11,6 +11,7 @@ import org.junit.Test;
 import java.util.Arrays;
 
 import static com.drpicox.fishingLagoon.actions.Actions.fish;
+import static com.drpicox.fishingLagoon.engine.RoundTestHelper.setTimeForCommand;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -30,6 +31,8 @@ public class RoundEngineCommandingTest {
 
         round.seatBot(bot(1), 0);
         round.seatBot(bot(2), 0);
+
+        setTimeForCommand(round);
         round.commandBot(bot(1), Arrays.asList(fish(1), fish(2)));
         round.commandBot(bot(2), Arrays.asList(fish(3), fish(4)));
 
@@ -50,6 +53,8 @@ public class RoundEngineCommandingTest {
         var round = createRound();
 
         round.seatBot(bot(1), 0);
+
+        setTimeForCommand(round);
         round.commandBot(bot(1), Arrays.asList(fish(1), fish(2)));
         round.commandBot(bot(2), Arrays.asList(fish(3), fish(4)));
 
@@ -64,13 +69,16 @@ public class RoundEngineCommandingTest {
         var round = createRound();
         round.seatBot(bot(1), 0);
 
+        setTimeForCommand(round);
         round.commandBot(bot(1), Arrays.asList(fish(1), fish(2), fish(3)));
     }
 
     private static RoundEngine parse(String... roundTextLines) {
         var roundText = String.join("\n", roundTextLines);
         var roundDescriptor = new RoundParser(new PropsParser()).parse(roundText);
-        return new RoundEngine(new RoundId("r0"), new TimeStamp(0L), roundDescriptor);
+        var round = new RoundEngine(new RoundId("r0"), new TimeStamp(0L), roundDescriptor);
+        round.updateNow(new TimeStamp(0L));
+        return round;
     }
 
     private static BotId bot(int n) {

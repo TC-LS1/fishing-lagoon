@@ -8,6 +8,7 @@ import com.drpicox.fishingLagoon.parser.RoundParser;
 import com.drpicox.fishingLagoon.rounds.RoundId;
 import org.junit.Test;
 
+import static com.drpicox.fishingLagoon.engine.RoundTestHelper.timeForSeat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
@@ -33,6 +34,7 @@ public class RoundEngineSeatingTest {
     public void round_seating_seat() {
         var round = createRound();
 
+        timeForSeat(round);
         round.seatBot(bot(1), 0);
 
         var seats = round.getSeats();
@@ -47,6 +49,7 @@ public class RoundEngineSeatingTest {
     public void round_seating_cannot_seat_beyond_lagoon_count_lagoons() {
         var round = createRound();
 
+        timeForSeat(round);
         round.seatBot(bot(1), 1);
 
         var seats = round.getSeats();
@@ -60,6 +63,7 @@ public class RoundEngineSeatingTest {
     public void round_seating_expands_lagoon_count() {
         var round = createRound();
 
+        timeForSeat(round);
         round.seatBot(bot(1), 0);
         round.seatBot(bot(2), 0);
 
@@ -75,6 +79,7 @@ public class RoundEngineSeatingTest {
     public void round_seating_allow_change_lagoon() {
         var round = createRound();
 
+        timeForSeat(round);
         round.seatBot(bot(1), 0);
         round.seatBot(bot(2), 0);
         round.seatBot(bot(3), 0);
@@ -92,6 +97,7 @@ public class RoundEngineSeatingTest {
     public void round_seating_density_can_have_decimals() {
         var round = createRound("maxDensity=1.5");
 
+        timeForSeat(round);
         round.seatBot(bot(1), 0);
         round.seatBot(bot(2), 0);
 
@@ -103,6 +109,7 @@ public class RoundEngineSeatingTest {
     public void round_seating_ignores_inexisting_lagoons() {
         var round = createRound();
 
+        timeForSeat(round);
         round.seatBot(bot(1), 0);
         round.seatBot(bot(2), 1);
 

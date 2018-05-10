@@ -54,7 +54,19 @@ public class RoundDescriptor {
         return lagoons.size();
     }
 
-    public TimeOffset getTotalTime() {
+    public TimeOffset getFinishOffset() {
         return new TimeOffset(getTotalMilliseconds());
+    }
+
+    public TimeOffset getSeatOffset() {
+        return new TimeOffset(0);
+    }
+
+    public TimeOffset getCommandOffset() {
+        return new TimeOffset(0 + seatMilliseconds);
+    }
+
+    public TimeOffset getScoreOffset() {
+        return new TimeOffset(0 + seatMilliseconds + commandMilliseconds);
     }
 }

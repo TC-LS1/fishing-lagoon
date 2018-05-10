@@ -19,6 +19,8 @@ import org.junit.Test;
 import static com.drpicox.fishingLagoon.JsonPathMatcher.jsonPath;
 import static com.drpicox.fishingLagoon.actions.Actions.fish;
 import static com.drpicox.fishingLagoon.actions.Actions.rest;
+import static com.drpicox.fishingLagoon.engine.RoundTestHelper.setTimeForCommand;
+import static com.drpicox.fishingLagoon.engine.RoundTestHelper.timeForSeat;
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -70,6 +72,8 @@ public class RoundEngineJsonTest {
     @Test
     public void round_json_seats() {
         var round = createRound();
+
+        timeForSeat(round);
         round.seatBot(bot(1), 0);
         round.seatBot(bot(2), 0);
         round.seatBot(bot(3), 1);
@@ -84,9 +88,13 @@ public class RoundEngineJsonTest {
     @Test
     public void round_json_commands() {
         var round = createRound();
+
+        timeForSeat(round);
         round.seatBot(bot(1), 0);
         round.seatBot(bot(2), 0);
         round.seatBot(bot(3), 0);
+
+        setTimeForCommand(round);
         round.commandBot(bot(1), asList(fish(1), fish(2)));
         round.commandBot(bot(2), asList(rest(), fish(3)));
 
@@ -98,9 +106,13 @@ public class RoundEngineJsonTest {
     @Test
     public void round_json_scores() {
         var round = createRound();
+
+        timeForSeat(round);
         round.seatBot(bot(1), 0);
         round.seatBot(bot(2), 0);
         round.seatBot(bot(3), 0);
+
+        setTimeForCommand(round);
         round.commandBot(bot(1), asList(fish(1), fish(2)));
         round.commandBot(bot(2), asList(rest(), fish(4)));
 
@@ -110,8 +122,6 @@ public class RoundEngineJsonTest {
         assertThat(json, jsonPath("$.bots.bot1.score", 3));
         assertThat(json, jsonPath("$.bots.bot2.score", 4));
     }
-
-
 
     private static BotId bot(int n) {
         return new BotId("bot" + n);

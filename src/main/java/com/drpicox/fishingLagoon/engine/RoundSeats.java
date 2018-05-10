@@ -63,7 +63,9 @@ public class RoundSeats {
     }
 
 
-    boolean seatBot(BotId botId, int lagoonIndex, int lagoonCount) {
+    boolean seatBot(BotId botId, int lagoonIndex, double maxDensity) {
+        int lagoonCount = getLagoonCount(botId, maxDensity);
+
         var prevBotSeat = getBotSeat(botId);
         if (prevBotSeat == lagoonIndex) return false;
 

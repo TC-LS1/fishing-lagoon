@@ -98,10 +98,10 @@ public class Round {
         return scores;
     }
 
-    public void apply(RoundEngine roundEngine, FishingLagoonRules rules, TimeStamp ts) {
-        var timeState = roundEngine.getTimeState(ts);
+    public void apply(RoundEngine roundEngine, FishingLagoonRules rules) {
+        var timeState = roundEngine.getState();
 
-        nowTs = ts;
+        nowTs = roundEngine.getNowTs();
         state = timeState.toString();
         descriptor = null;
         seats = null;

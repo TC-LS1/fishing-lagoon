@@ -13,6 +13,9 @@ import com.drpicox.fishingLagoon.rules.FishingLagoonRules;
 import org.junit.Test;
 
 import static com.drpicox.fishingLagoon.actions.Actions.fish;
+
+import static com.drpicox.fishingLagoon.engine.RoundTestHelper.setTimeForCommand;
+import static com.drpicox.fishingLagoon.engine.RoundTestHelper.timeForSeat;
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -39,6 +42,8 @@ public class RoundEngineScoringTest {
     @Test
     public void round_scoring_computes_lagoon_fish_population() {
         var round = createRound();
+
+        timeForSeat(round);
         round.seatBot(bot(1), 0);
 
         var scores = round.getScores(rules);
@@ -53,6 +58,7 @@ public class RoundEngineScoringTest {
     public void round_scoring_computes_lagoon_fish_population_adjusting_lagoons_because_seating() {
         var round = createRound();
 
+        timeForSeat(round);
         round.seatBot(bot(1), 0);
         round.seatBot(bot(2), 0);
         round.seatBot(bot(3), 0);
@@ -70,9 +76,12 @@ public class RoundEngineScoringTest {
     public void round_scoring_computes_population_fishing() {
         var round = createRound();
 
+        timeForSeat(round);
         round.seatBot(bot(1), 0);
         round.seatBot(bot(2), 0);
         round.seatBot(bot(3), 1);
+
+        setTimeForCommand(round);
         round.commandBot(bot(1), asList(fish(1L), fish(2L)));
         round.commandBot(bot(3), asList(fish(200L), fish(200L)));
 
@@ -85,7 +94,10 @@ public class RoundEngineScoringTest {
     public void round_scoring_computes_bot_score() {
         var round = createRound("lagoon.fishPopulation=9");
 
+        timeForSeat(round);
         round.seatBot(bot(1), 0);
+
+        setTimeForCommand(round);
         round.commandBot(bot(1), asList(fish(1L), fish(2L)));
 
         var scores = round.getScores(rules);
@@ -98,9 +110,12 @@ public class RoundEngineScoringTest {
     public void round_scoring_computes_bot_scores_in_different_lagoons() {
         var round = createRound("lagoon.fishPopulation=9");
 
+        timeForSeat(round);
         round.seatBot(bot(1), 0);
         round.seatBot(bot(2), 0);
         round.seatBot(bot(2), 1);
+
+        setTimeForCommand(round);
         round.commandBot(bot(1), asList(fish(1L), fish(2L)));
         round.commandBot(bot(2), asList(fish(3L), fish(4L)));
 
@@ -115,7 +130,10 @@ public class RoundEngineScoringTest {
     public void round_scoring_considres_lagoon_fish_depletation() {
         var round = createRound("lagoon.fishPopulation=9");
 
+        timeForSeat(round);
         round.seatBot(bot(1), 0);
+
+        setTimeForCommand(round);
         round.commandBot(bot(1), asList(fish(11L), fish(2L)));
 
         var scores = round.getScores(rules);
@@ -126,8 +144,11 @@ public class RoundEngineScoringTest {
     public void round_scoring_fish_when_lagoon_will_depleted_first_who_fish_less() {
         var round = createRound("lagoon.fishPopulation=9");
 
+        timeForSeat(round);
         round.seatBot(bot(1), 0);
         round.seatBot(bot(2), 0);
+
+        setTimeForCommand(round);
         round.commandBot(bot(1), asList(fish(8L), fish(2L)));
         round.commandBot(bot(2), asList(fish(9L), fish(2L)));
 
@@ -140,9 +161,12 @@ public class RoundEngineScoringTest {
     public void round_scoring_fish_when_lagoon_will_depleted_same_fishing_share_fishes_equally() {
         var round = createRound("lagoon.fishPopulation=9", "weekCount=1");
 
+        timeForSeat(round);
         round.seatBot(bot(1), 0);
         round.seatBot(bot(2), 0);
         round.seatBot(bot(3), 0);
+
+        setTimeForCommand(round);
         round.commandBot(bot(1), asList(fish(8L)));
         round.commandBot(bot(2), asList(fish(8L)));
         round.commandBot(bot(3), asList(fish(9L)));

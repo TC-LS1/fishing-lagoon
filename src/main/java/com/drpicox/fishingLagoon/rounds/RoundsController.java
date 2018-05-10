@@ -68,25 +68,25 @@ public class RoundsController {
 
     public Round getRound(RoundId id, TimeStamp ts) throws SQLException {
         var round = roundsStore.get(id);
-        var engine = getRoundEngine(round);
+        var engine = getRoundEngine(round, ts);
 
-        round.apply(engine, fishingLagoonRules, ts);
+        round.apply(engine, fishingLagoonRules);
         return round;
     }
 
-    private RoundEngine getRoundEngine(Round round) throws SQLException {
+    private RoundEngine getRoundEngine(Round round, TimeStamp nowTs) throws SQLException {
         var engine = roundsDescriptorsStore.get(round);
         roundsSeatsStore.get(round.getId(), engine);
         roundsCommandsStore.get(round.getId(), engine);
+        engine.updateNow(nowTs);
         return engine;
     }
 
     public Round seatBot(RoundId id, BotId botId, int lagoonIndex, TimeStamp ts) throws SQLException {
         var round = roundsStore.get(id);
-        if (!round.isActive(ts)) throw new IllegalStateException("Round is not active");
 
-        var engine = getRoundEngine(round);
-        if (engine.getTimeState(ts).isAcceptingSeats()) {
+        var engine = getRoundEngine(round, ts);
+        if (engine.getState().isAcceptingSeats()) {
             if (engine.seatBot(botId, lagoonIndex)) {
                 roundsSeatsStore.save(round.getId(), botId, lagoonIndex);
                 return getRound(id, ts);
@@ -99,17 +99,12 @@ public class RoundsController {
 
     public Round commandBot(RoundId id, BotId botId, List<Action> actions, TimeStamp ts) throws SQLException {
         var round = roundsStore.get(id);
-        if (!round.isActive(ts)) throw new IllegalStateException("Round is not active");
 
-        var engine = getRoundEngine(round);
-        if (engine.getTimeState(ts).isAcceptingCommands()) {
-            if (engine.commandBot(botId, actions)) {
-                roundsCommandsStore.save(round.getId(), botId, actions);
-                return getRound(id, ts);
-            }
-            throw new IllegalArgumentException("Cannot command bot");
+        var engine = getRoundEngine(round, ts);
+        if (engine.commandBot(botId, actions)) {
+            roundsCommandsStore.save(round.getId(), botId, actions);
+            return getRound(id, ts);
         }
-
-        throw new IllegalStateException("It is not time for commanding");
+        throw new IllegalArgumentException("Cannot command bot");
     }
 }

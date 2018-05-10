@@ -26,7 +26,7 @@ public class RoundEngine {
     public RoundEngine(RoundId id, TimeStamp startTs, RoundDescriptor descriptor) {
         this.id = id;
         this.startTs = startTs;
-        this.endTs = startTs.plus(descriptor.getTotalTime());
+        this.endTs = startTs.plus(descriptor.getFinishOffset());
         this.descriptor = descriptor;
 
         seats = new RoundSeats();
@@ -34,13 +34,8 @@ public class RoundEngine {
         scores = null; // computed under demand
     }
 
-    // Current information
-
-    public void setupNow(TimeStamp nowTs, BotId selfId) {
-        this.nowTs = nowTs;
-        this.selfId = selfId;
-
-        this.state = getTimeState(nowTs);
+    public TimeStamp getStartTs() {
+        return startTs;
     }
 
     // descriptor
@@ -51,14 +46,25 @@ public class RoundEngine {
 
     // time and round state
 
-    public RoundTimeState getTimeState(TimeStamp ts) {
-        return RoundTimeState.get(ts.getOffsetFrom(startTs), descriptor);
+
+    public TimeStamp getNowTs() {
+        return nowTs;
+    }
+
+    public RoundTimeState getState() {
+        return state;
+    }
+
+    public void updateNow(TimeStamp nowTs) {
+        this.nowTs = nowTs;
+        this.state = RoundTimeState.get(nowTs.getOffsetFrom(startTs), descriptor);
     }
 
     // round seats
 
     public boolean seatBot(BotId botId, int lagoonIndex) {
-        return seats.seatBot(botId, lagoonIndex, getLagoonCount(botId));
+        if (!state.isAcceptingSeats()) throw new IllegalStateException("It is not time for seating");
+        return seats.seatBot(botId, lagoonIndex, descriptor.getMaxDensity());
     }
 
     public void forceSeatBot(BotId botId, int lagoonIndex) {
@@ -73,7 +79,7 @@ public class RoundEngine {
     // lagoon count
 
     public int getLagoonCount() {
-        return getLagoonCount(null);
+        return getLagoonCount(selfId);
     }
 
     public int getLagoonCount(BotId botId) {
@@ -85,6 +91,7 @@ public class RoundEngine {
     // round commands
 
     public boolean commandBot(BotId botId, List<Action> actions) {
+        if (!state.isAcceptingCommands()) throw new IllegalStateException("It is not time for commanding");
         if (actions.size() != getWeekCount()) throw new IllegalArgumentException("Actions length must match weekCount");
 
         var lagoonIndex = seats.getBotSeat(botId);
