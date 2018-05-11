@@ -1,19 +1,22 @@
 package com.drpicox.fishingLagoon;
 
-import com.drpicox.fishingLagoon.actions.ActionParser;
-import com.drpicox.fishingLagoon.admin.AdminToken;
-import com.drpicox.fishingLagoon.bots.BotsController;
-import com.drpicox.fishingLagoon.bots.BotsStore;
+import com.drpicox.fishingLagoon.business.GameController;
+import com.drpicox.fishingLagoon.business.RoundsController;
+import com.drpicox.fishingLagoon.common.actions.ActionParser;
+import com.drpicox.fishingLagoon.business.AdminToken;
+import com.drpicox.fishingLagoon.business.BotsController;
+import com.drpicox.fishingLagoon.persistence.*;
 import com.drpicox.fishingLagoon.common.IdGenerator;
 import com.drpicox.fishingLagoon.common.UuidIdGenerator;
-import com.drpicox.fishingLagoon.parser.GsonFactory;
-import com.drpicox.fishingLagoon.parser.PropsParser;
-import com.drpicox.fishingLagoon.parser.RoundParser;
-import com.drpicox.fishingLagoon.rounds.*;
-import com.drpicox.fishingLagoon.rules.FishingLagoonRuleFishing;
-import com.drpicox.fishingLagoon.rules.FishingLagoonRuleProcreation;
-import com.drpicox.fishingLagoon.rules.FishingLagoonRules;
-import com.drpicox.fishingLagoon.rules.FishingLagoonSetupRuleFishPopulation;
+import com.drpicox.fishingLagoon.common.parser.GsonFactory;
+import com.drpicox.fishingLagoon.common.parser.PropsParser;
+import com.drpicox.fishingLagoon.common.parser.RoundParser;
+import com.drpicox.fishingLagoon.presentation.GamePresentation;
+import com.drpicox.fishingLagoon.presentation.RestPresentation;
+import com.drpicox.fishingLagoon.business.rules.FishingLagoonRuleFishing;
+import com.drpicox.fishingLagoon.business.rules.FishingLagoonRuleProcreation;
+import com.drpicox.fishingLagoon.business.rules.FishingLagoonRules;
+import com.drpicox.fishingLagoon.business.rules.FishingLagoonSetupRuleFishPopulation;
 import com.google.gson.*;
 
 import java.sql.Connection;
@@ -77,6 +80,14 @@ public class Bootstrap {
         return gameController;
     }
 
+    private GamePresentation gamePresentation;
+    public GamePresentation getGamePresentation() throws SQLException {
+        if (gamePresentation == null) {
+            gamePresentation = new GamePresentation(getGameController(), getFishingLagoonRules());
+        }
+        return gamePresentation;
+    }
+
     private GsonFactory gsonFactory;
     public Gson getGson() {
         if (gsonFactory == null) {
@@ -98,23 +109,24 @@ public class Bootstrap {
         return fishingLagoonRules;
     }
 
-    private RestController restController;
-    public RestController getRestController() throws SQLException {
-        if (restController == null) {
-            restController = new RestController(getActionParser(), getGameController(), getGson());
+    private RestPresentation restPresentation;
+    public RestPresentation getRestPresentation() throws SQLException {
+        if (restPresentation == null) {
+            restPresentation = new RestPresentation(getActionParser(), getGamePresentation(), getGson());
         }
-        return restController;
+        return restPresentation;
     }
 
     private RoundsController roundsController;
     public RoundsController getRoundsController() throws SQLException {
         if (roundsController == null) {
-            var roundsCommandsStore = new RoundsCommandsStore(getActionParser(), getConnection());
-            var roundsDescriptionsStore = new RoundsDescriptorsStore(getConnection(), getRoundParser());
-            var roundsSeatsStore = new RoundsSeatsStore(getConnection());
-            var roundsStore = new RoundsStore(getConnection());
+            var roundsCommandsTable = new RoundsCommandsTable(getActionParser(), getConnection());
+            var roundsDescriptionsTable = new RoundsDescriptorsTable(getConnection(), getRoundParser());
+            var roundsSeatsTable = new RoundsSeatsTable(getConnection());
+            var roundsStartsTable = new RoundsStartsTable(getConnection());
+            var roundsStore = new RoundsStore(roundsStartsTable, roundsDescriptionsTable, roundsSeatsTable, roundsCommandsTable);
             var idGenerator = getIdGenerator("round");
-            roundsController = new RoundsController(idGenerator, getFishingLagoonRules(), roundsCommandsStore, roundsDescriptionsStore, roundsSeatsStore, roundsStore);
+            roundsController = new RoundsController(idGenerator, roundsStore);
         }
         return roundsController;
     }

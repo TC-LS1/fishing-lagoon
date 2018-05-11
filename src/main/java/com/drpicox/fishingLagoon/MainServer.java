@@ -1,7 +1,8 @@
 package com.drpicox.fishingLagoon;
 
-import com.drpicox.fishingLagoon.admin.AdminToken;
-import com.drpicox.fishingLagoon.bots.BotToken;
+import com.drpicox.fishingLagoon.business.AdminToken;
+import com.drpicox.fishingLagoon.business.GameController;
+import com.drpicox.fishingLagoon.business.bots.BotToken;
 
 import java.sql.SQLException;
 
@@ -12,7 +13,7 @@ public class MainServer {
         var adminToken = new AdminToken(adminTokenString);
 
         var bootstrap = new Bootstrap(adminToken);
-        var restController = bootstrap.getRestController();
+        var restController = bootstrap.getRestPresentation();
 
         generateBotTokens(bootstrap.getGameController(), adminToken);
 

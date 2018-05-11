@@ -1,6 +1,6 @@
 package com.drpicox.fishingLagoon;
 
-import com.drpicox.fishingLagoon.admin.AdminToken;
+import com.drpicox.fishingLagoon.business.AdminToken;
 import com.drpicox.fishingLagoon.common.IdGenerator;
 import com.drpicox.fishingLagoon.common.SequenceIdGenerator;
 
