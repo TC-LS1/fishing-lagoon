@@ -48,7 +48,7 @@ public class RoundScores {
         }
     }
 
-    // persistence
+    // scores
 
     public int getBotCount() {
         return bots.size();

@@ -22,17 +22,27 @@ public class RoundPresentation {
     private Map<String, RoundCommand> commands;
     private RoundScores scores;
 
-    public RoundPresentation(Round round) {
+    public static RoundPresentation from(Round round) {
+        if (round == null) return null;
+        return new RoundPresentation(round);
+    }
+
+    public static RoundPresentation from(Round round, TimeStamp nowTs, BotId selfId, FishingLagoonRules rules) {
+        if (round == null) return null;
+        return new RoundPresentation(round, nowTs, selfId, rules);
+    }
+
+    private RoundPresentation(Round round) {
         this.id = round.getId().getValue();
         this.startTs = round.getStartTs().getMilliseconds();
         this.endTs = round.getEndTs().getMilliseconds();
     }
 
-    public RoundPresentation(Round round, TimeStamp nowTs, BotId selfId, FishingLagoonRules rules) {
+    private RoundPresentation(Round round, TimeStamp nowTs, BotId selfId, FishingLagoonRules rules) {
         this(round);
 
         this.nowTs = nowTs.getMilliseconds();
-        this.selfId = selfId.getValue();
+        this.selfId = selfId != null ? selfId.getValue() : null;
 
         var state = round.getState(nowTs);
         this.state = state.name();

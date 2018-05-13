@@ -33,22 +33,22 @@ public class RestPresentation {
 
         get("/hello", (rq, rs) -> {
            var m = new HashMap();
-           m.put("hello", "orld");
+           m.put("hello", "world");
            return m;
         }, gson::toJson);
 
         get("/", (a,b) -> "Hello");
 
-        get("/persistence", this::listBots, gson::toJson);
-        post("/persistence", this::createBot, gson::toJson);
-        get("/persistence/:botToken", this::getBotByToken, gson::toJson);
-        put("/persistence/:botToken", this::updateBot, gson::toJson);
+        get("/bots", this::listBots, gson::toJson);
+        post("/bots", this::createBot, gson::toJson);
+        get("/bots/:botToken", this::getBotByToken, gson::toJson);
+        put("/bots/:botToken", this::updateBot, gson::toJson);
 
-        post("/business", this::createRound, gson::toJson);
-        get("/business", this::listRounds, gson::toJson);
-        get("/business/:roundId", this::getRound, gson::toJson);
-        put("/business/:roundId/seats/:botToken", this::seatBot, gson::toJson);
-        put("/business/:roundId/commands/:botToken", this::commandBot, gson::toJson);
+        post("/rounds", this::createRound, gson::toJson);
+        get("/rounds", this::listRounds, gson::toJson);
+        get("/rounds/:roundId", this::getRound, gson::toJson);
+        put("/rounds/:roundId/seats/:botToken", this::seatBot, gson::toJson);
+        put("/rounds/:roundId/commands/:botToken", this::commandBot, gson::toJson);
 
         exception(IllegalArgumentException.class, this::handle);
         exception(IllegalStateException.class, this::handle);
@@ -84,7 +84,7 @@ public class RestPresentation {
 
     private Object getRound(Request request, Response response) throws SQLException {
         var roundId = new RoundId(request.params("roundId"));
-        var botToken = new BotToken(request.params("botToken"));
+        var botToken = new BotToken(request.queryParams("botToken"));
         return game.getRound(roundId, botToken, now());
     }
 

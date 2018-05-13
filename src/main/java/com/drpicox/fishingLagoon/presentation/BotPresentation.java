@@ -8,7 +8,12 @@ public class BotPresentation {
     private String id;
     private String name;
 
-    public BotPresentation(Bot bot) {
+    public static BotPresentation from(Bot bot) {
+        if (bot == null) return null;
+        return new BotPresentation(bot);
+    }
+
+    private BotPresentation(Bot bot) {
         this.id = bot.getId().getValue();
         this.name = bot.getName();
     }
