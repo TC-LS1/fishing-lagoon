@@ -10,8 +10,10 @@ import com.drpicox.fishingLagoon.business.rounds.RoundId;
 import com.drpicox.fishingLagoon.business.rules.FishingLagoonRules;
 import com.drpicox.fishingLagoon.common.TimeStamp;
 import com.drpicox.fishingLagoon.common.actions.Action;
+import com.drpicox.fishingLagoon.presentation.limits.BotsQueryLimits;
 
 import java.sql.SQLException;
+import java.sql.Time;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,10 +21,12 @@ public class GamePresentation {
 
     private GameController game;
     private FishingLagoonRules rules;
+    private BotsQueryLimits limits;
 
-    public GamePresentation(GameController game, FishingLagoonRules rules) {
+    public GamePresentation(GameController game, FishingLagoonRules rules, BotsQueryLimits limits) {
         this.game = game;
         this.rules = rules;
+        this.limits = limits;
     }
 
     public BotPresentation createBot(BotToken botToken, AdminToken adminToken) throws SQLException {
@@ -46,12 +50,12 @@ public class GamePresentation {
     }
 
     public RoundPresentation createRound(String roundText, BotToken token, TimeStamp now) throws SQLException {
-        var botId = getBotId(token);
+        var botId = getBotId(token, now);
         return RoundPresentation.from(game.createRound(roundText, now), now, botId, rules);
     }
 
     public RoundPresentation getRound(RoundId id, BotToken token, TimeStamp now) throws SQLException {
-        var botId = mayGetBotId(token);
+        var botId = mayGetBotId(token, now);
         return RoundPresentation.from(game.getRound(id), now, botId, rules);
     }
 
@@ -60,7 +64,7 @@ public class GamePresentation {
     }
 
     public List<RoundPresentation> listActiveRounds(BotToken token, TimeStamp now) throws SQLException {
-        BotId botId = mayGetBotId(token);
+        BotId botId = mayGetBotId(token, now);
         return game.listRounds().stream()
                 .filter(round -> round.getState(now).isActive())
                 .map(round -> RoundPresentation.from(round, now, botId, rules))
@@ -68,23 +72,35 @@ public class GamePresentation {
     }
 
     public RoundPresentation seatBot(RoundId roundId, BotToken token, int lagoonIndex, TimeStamp now) throws SQLException {
-        var botId = getBotId(token);
+        var botId = getBotId(token, now);
         return RoundPresentation.from(game.seatBot(roundId, botId, lagoonIndex, now), now, botId, rules);
     }
 
     public RoundPresentation commandBot(RoundId roundId, BotToken token, List<Action> actions, TimeStamp now) throws SQLException {
-        var botId = getBotId(token);
+        var botId = getBotId(token, now);
         return RoundPresentation.from(game.commandBot(roundId, botId, actions, now), now, botId, rules);
     }
 
-    private BotId getBotId(BotToken token) throws SQLException {
+    private BotId getBotId(BotToken token, TimeStamp now) throws SQLException {
+        limits.fastCheckAccess(token, now);
+
         Bot bot = game.getBotByToken(token);
         if (bot == null) throw new IllegalArgumentException("Invalid bot token");
+
+        limits.trackAccess(token, now);
         return bot.getId();
     }
 
-    private BotId mayGetBotId(BotToken token) throws SQLException {
+    private BotId mayGetBotId(BotToken token, TimeStamp now) throws SQLException {
+        limits.fastCheckAccess(token, now);
+        boolean isEmptyToken = token != null && token.equals(new BotToken(""));
+        if (isEmptyToken) return null;
+
+        limits.trackAccess(token, now);
         var bot = game.getBotByToken(token);
-        return bot != null ? bot.getId() : null;
+        if (bot == null) return null;
+
+        limits.trackAccess(token, now);
+        return bot.getId();
     }
 }

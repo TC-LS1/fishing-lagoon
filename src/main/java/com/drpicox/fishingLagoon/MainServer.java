@@ -13,7 +13,7 @@ public class MainServer {
         var adminToken = new AdminToken(adminTokenString);
 
         var bootstrap = new Bootstrap(adminToken);
-        var restController = bootstrap.getRestPresentation();
+        var restController = bootstrap.getRestServerController();
 
         generateBotTokens(bootstrap.getGameController(), adminToken);
 

@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.drpicox</groupId>
-    <artifactId>fishingLagoon</artifactId>
+    <artifactId>fishingLagoonServer</artifactId>
     <version>1.0.0</version>
     <build>
         <plugins>

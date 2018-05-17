@@ -15,13 +15,13 @@ import java.util.Map;
 
 import static spark.Spark.*;
 
-public class RestPresentation {
+public class RestServerController {
 
     private ActionParser actionParser;
     private GamePresentation game;
     private Gson gson;
 
-    public RestPresentation(ActionParser actionParser, GamePresentation game, Gson gson) {
+    public RestServerController(ActionParser actionParser, GamePresentation game, Gson gson) {
         this.actionParser = actionParser;
         this.game = game;
         this.gson = gson;

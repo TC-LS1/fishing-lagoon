@@ -12,11 +12,12 @@ import com.drpicox.fishingLagoon.common.parser.GsonFactory;
 import com.drpicox.fishingLagoon.common.parser.PropsParser;
 import com.drpicox.fishingLagoon.common.parser.RoundParser;
 import com.drpicox.fishingLagoon.presentation.GamePresentation;
-import com.drpicox.fishingLagoon.presentation.RestPresentation;
+import com.drpicox.fishingLagoon.presentation.RestServerController;
 import com.drpicox.fishingLagoon.business.rules.FishingLagoonRuleFishing;
 import com.drpicox.fishingLagoon.business.rules.FishingLagoonRuleProcreation;
 import com.drpicox.fishingLagoon.business.rules.FishingLagoonRules;
 import com.drpicox.fishingLagoon.business.rules.FishingLagoonSetupRuleFishPopulation;
+import com.drpicox.fishingLagoon.presentation.limits.BotsQueryLimits;
 import com.google.gson.*;
 
 import java.sql.Connection;
@@ -83,7 +84,7 @@ public class Bootstrap {
     private GamePresentation gamePresentation;
     public GamePresentation getGamePresentation() throws SQLException {
         if (gamePresentation == null) {
-            gamePresentation = new GamePresentation(getGameController(), getFishingLagoonRules());
+            gamePresentation = new GamePresentation(getGameController(), getFishingLagoonRules(), new BotsQueryLimits());
         }
         return gamePresentation;
     }
@@ -109,12 +110,12 @@ public class Bootstrap {
         return fishingLagoonRules;
     }
 
-    private RestPresentation restPresentation;
-    public RestPresentation getRestPresentation() throws SQLException {
-        if (restPresentation == null) {
-            restPresentation = new RestPresentation(getActionParser(), getGamePresentation(), getGson());
+    private RestServerController restServerController;
+    public RestServerController getRestServerController() throws SQLException {
+        if (restServerController == null) {
+            restServerController = new RestServerController(getActionParser(), getGamePresentation(), getGson());
         }
-        return restPresentation;
+        return restServerController;
     }
 
     private RoundsController roundsController;
