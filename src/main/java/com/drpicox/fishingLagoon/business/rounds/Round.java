@@ -1,47 +1,52 @@
 package com.drpicox.fishingLagoon.business.rounds;
 
 import com.drpicox.fishingLagoon.business.bots.BotId;
+import com.drpicox.fishingLagoon.business.tournaments.TournamentId;
 import com.drpicox.fishingLagoon.common.actions.Action;
 import com.drpicox.fishingLagoon.common.TimeStamp;
-import com.drpicox.fishingLagoon.common.actions.Actions;
 import com.drpicox.fishingLagoon.common.actions.RestAction;
 
 import java.util.List;
 import java.util.Set;
 
 public class Round {
-    private RoundId id;
-    private TimeStamp startTs;
-
+    private RoundMetadata metadata;
     private RoundDescriptor descriptor;
     private RoundSeats seats;
     private RoundCommands commands;
 
-    public Round(RoundId id, TimeStamp startTs, RoundDescriptor descriptor, RoundSeats seats, RoundCommands commands) {
-        this.id = id;
-        this.startTs = startTs;
+    public Round(RoundMetadata metadata, RoundDescriptor descriptor, RoundSeats seats, RoundCommands commands) {
+        this.metadata = metadata;
         this.descriptor = descriptor;
-
         this.seats = seats;
         this.commands = commands;
     }
 
+    public Round(RoundId id, TournamentId tournamentId, TimeStamp startTs, RoundDescriptor descriptor) {
+        this(
+                new RoundMetadata(id, tournamentId, startTs, startTs.plus(descriptor.getFinishOffset())),
+                descriptor,
+                new RoundSeats(),
+                new RoundCommands()
+        );
+    }
+
     public Round(RoundId id, TimeStamp startTs, RoundDescriptor descriptor) {
-        this(id, startTs, descriptor, new RoundSeats(), new RoundCommands());
+        this(id, TournamentId.DEFAULT, startTs, descriptor);
     }
 
     public RoundId getId() {
-        return id;
+        return metadata.getId();
     }
 
     public TimeStamp getStartTs() {
-        return startTs;
+        return metadata.getStartTs();
     }
     public TimeStamp getEndTs() {
-        return startTs.plus(descriptor.getFinishOffset());
+        return metadata.getEndTs();
     }
     public RoundTimeState getState(TimeStamp nowTs) {
-        return RoundTimeState.get(nowTs.getOffsetFrom(startTs), descriptor);
+        return RoundTimeState.get(nowTs.getOffsetFrom(getStartTs()), descriptor);
     }
 
     public RoundDescriptor getDescriptor() {

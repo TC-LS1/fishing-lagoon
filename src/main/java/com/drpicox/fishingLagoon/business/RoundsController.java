@@ -3,6 +3,8 @@ package com.drpicox.fishingLagoon.business;
 import com.drpicox.fishingLagoon.business.rounds.Round;
 import com.drpicox.fishingLagoon.business.rounds.RoundDescriptor;
 import com.drpicox.fishingLagoon.business.rounds.RoundId;
+import com.drpicox.fishingLagoon.business.tournaments.Tournament;
+import com.drpicox.fishingLagoon.business.tournaments.TournamentId;
 import com.drpicox.fishingLagoon.persistence.RoundsStore;
 import com.drpicox.fishingLagoon.business.bots.BotId;
 import com.drpicox.fishingLagoon.common.actions.Action;
@@ -10,6 +12,7 @@ import com.drpicox.fishingLagoon.common.IdGenerator;
 import com.drpicox.fishingLagoon.common.TimeStamp;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class RoundsController {
@@ -18,13 +21,16 @@ public class RoundsController {
 
     private IdGenerator idGenerator;
     private RoundsStore roundsStore;
+    private Tournament tournament;
 
-    public RoundsController(IdGenerator idGenerator, RoundsStore roundsStore) {
+    public RoundsController(IdGenerator idGenerator, RoundsStore roundsStore, Tournament tournament) {
         this.idGenerator = idGenerator;
         this.roundsStore = roundsStore;
+        this.tournament = tournament;
     }
 
     public Round create(RoundDescriptor descriptor, TimeStamp now) throws SQLException {
+        tournament.verifyRoundCreation(descriptor, now);
         verifyRoundDuration(descriptor);
         if (hasActiveRound(now)) throw new IllegalArgumentException("There is an active round");
 
@@ -32,6 +38,21 @@ public class RoundsController {
         var round = new Round(id, now, descriptor);
 
         return roundsStore.save(round);
+    }
+
+    public List<Round> createTournamentRounds(TournamentId tournamentId, List<RoundDescriptor> descriptors, TimeStamp now) {
+        tournament.verifyTournamentRoundCreation(tournamentId, descriptors, now);
+
+        var nextStartTs = now;
+        var result = new ArrayList<Round>();
+        for (var descriptor: descriptors) {
+            var id = new RoundId(idGenerator.next());
+            var round = new Round(id, tournamentId, nextStartTs, descriptor);
+            result.add(round);
+            nextStartTs = round.getEndTs();
+        }
+
+        return result;
     }
 
     private void verifyRoundDuration(RoundDescriptor descriptor) {

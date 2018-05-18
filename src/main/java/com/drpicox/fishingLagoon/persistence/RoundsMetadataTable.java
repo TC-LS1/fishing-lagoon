@@ -1,6 +1,7 @@
 package com.drpicox.fishingLagoon.persistence;
 
 import com.drpicox.fishingLagoon.business.rounds.RoundId;
+import com.drpicox.fishingLagoon.business.rounds.RoundMetadata;
 import com.drpicox.fishingLagoon.common.TimeStamp;
 
 import java.sql.Connection;
@@ -10,10 +11,10 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
-public class RoundsStartsTable {
+public class RoundsMetadataTable {
     private Connection connection;
 
-    public RoundsStartsTable(Connection connection) throws SQLException {
+    public RoundsMetadataTable(Connection connection) throws SQLException {
         this.connection = connection;
 
         try (var stmt = connection.createStatement()) {
@@ -26,7 +27,7 @@ public class RoundsStartsTable {
         }
     }
 
-    public TimeStamp get(RoundId id) throws SQLException {
+    public RoundMetadata get(RoundId id) throws SQLException {
         try (var pstmt = this.connection.prepareStatement("SELECT * FROM roundsStarts WHERE id = ?")) {
             pstmt.setString(1, id.getValue());
             try (var rs = pstmt.executeQuery()) {
@@ -51,7 +52,7 @@ public class RoundsStartsTable {
         }
     }
 
-    public TimeStamp save(RoundId id, TimeStamp start) throws SQLException {
+    public RoundMetadata save(RoundId id, RoundMetadata metadata) throws SQLException {
         try (var pstmt = connection.prepareStatement(
                 "MERGE INTO roundsStarts(id, startTs) VALUES(?, ?)")
         ) {

@@ -386,4 +386,8 @@ public class GameRoundsTest {
         assertThat(get.getSelfId(), is(bot(4)));
     }
 
+    @Test(expected = IllegalStateException.class)
+    public void tournament_creation_throws() {
+        gamePresentation.createTournamentRounds(tournament(1), "", adminToken, ts(0L));
+    }
 }

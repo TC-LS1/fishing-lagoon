@@ -7,6 +7,7 @@ import com.drpicox.fishingLagoon.business.bots.BotId;
 import com.drpicox.fishingLagoon.business.bots.BotToken;
 import com.drpicox.fishingLagoon.business.rounds.RoundId;
 import com.drpicox.fishingLagoon.business.rules.FishingLagoonRules;
+import com.drpicox.fishingLagoon.business.tournaments.TournamentId;
 import com.drpicox.fishingLagoon.common.TimeStamp;
 import com.drpicox.fishingLagoon.common.actions.Action;
 import com.drpicox.fishingLagoon.presentation.limits.BotsQueryLimits;
@@ -50,6 +51,14 @@ public class GamePresentation {
     public RoundPresentation createRound(String roundText, BotToken token, TimeStamp now) throws SQLException {
         var botId = getBotId(token, now);
         return RoundPresentation.from(game.createRound(roundText, now), now, botId, rules);
+    }
+
+    public List<RoundPresentation> createTournamentRounds(TournamentId tournamentId, String tournamentText, AdminToken adminToken, TimeStamp now) {
+        return game
+                .createTournamentRounds(tournamentId, tournamentText, adminToken, now)
+                .stream()
+                .map(round -> RoundPresentation.from(round))
+                .collect(Collectors.toList());
     }
 
     public RoundPresentation getRound(RoundId id, BotToken token, TimeStamp now) throws SQLException {

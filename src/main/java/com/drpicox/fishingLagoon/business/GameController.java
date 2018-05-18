@@ -5,12 +5,14 @@ import com.drpicox.fishingLagoon.business.bots.BotId;
 import com.drpicox.fishingLagoon.business.bots.BotToken;
 import com.drpicox.fishingLagoon.business.rounds.Round;
 import com.drpicox.fishingLagoon.business.rounds.RoundId;
+import com.drpicox.fishingLagoon.business.tournaments.TournamentId;
 import com.drpicox.fishingLagoon.common.TimeStamp;
 import com.drpicox.fishingLagoon.common.actions.Action;
 import com.drpicox.fishingLagoon.common.parser.RoundParser;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 public class GameController {
     private AdminToken adminToken;
@@ -52,6 +54,13 @@ public class GameController {
         return roundsController.create(descriptor, now);
     }
 
+    public synchronized List<Round> createTournamentRounds(TournamentId tournamentId, String tournamentText, AdminToken adminToken, TimeStamp now) {
+        if (!this.adminToken.validate(adminToken)) throw new IllegalArgumentException("Invalid adminToken");
+
+        var descriptors = roundParser.parseRounds(tournamentText);
+        return roundsController.createTournamentRounds(tournamentId, descriptors, now);
+    }
+
     public Round getRound(RoundId id) throws SQLException {
         return roundsController.getRound(id);
     }
@@ -73,4 +82,5 @@ public class GameController {
         if (bot == null) throw new IllegalArgumentException("Invalid bot token");
         return bot.getId();
     }
+
 }

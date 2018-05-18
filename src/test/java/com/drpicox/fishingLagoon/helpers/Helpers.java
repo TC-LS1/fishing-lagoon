@@ -3,6 +3,7 @@ package com.drpicox.fishingLagoon.helpers;
 import com.drpicox.fishingLagoon.business.bots.BotId;
 import com.drpicox.fishingLagoon.business.bots.BotToken;
 import com.drpicox.fishingLagoon.business.rounds.RoundId;
+import com.drpicox.fishingLagoon.business.tournaments.TournamentId;
 import com.drpicox.fishingLagoon.common.TimeOffset;
 import com.drpicox.fishingLagoon.common.TimeStamp;
 
@@ -24,6 +25,9 @@ public class Helpers {
     }
     public static RoundId round(int n) {
         return new RoundId("round" + n);
+    }
+    public static TournamentId tournament(int n) {
+        return new TournamentId("tournament" + n);
     }
 
     public static TimeStamp ts(long n) {

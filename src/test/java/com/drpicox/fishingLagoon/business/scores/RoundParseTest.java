@@ -12,7 +12,7 @@ public class RoundParseTest {
 
     @Test
     public void round_parse_test() {
-        String tournamentText = String.join("\n", "",
+        String roundText = String.join("\n", "",
                 "maxDensity=3.0",
                 "maxDensity=4.0",
                 "lagoons=lagoonAverage",
@@ -21,7 +21,7 @@ public class RoundParseTest {
         );
 
         var parser = new RoundParser(new PropsParser());
-        var roundDescriptor = parser.parse(tournamentText);
+        var roundDescriptor = parser.parse(roundText);
         var lagoonDescriptor0 = roundDescriptor.getLagoonDescriptor(0);
 
         assertThat(roundDescriptor.getMaxDensity(), is(4.0));
@@ -34,10 +34,10 @@ public class RoundParseTest {
 
     @Test
     public void round_parse_defaults() {
-        String tournamentText = "";
+        String roundText = "";
 
         var parser = new RoundParser(new PropsParser());
-        var roundDescriptor = parser.parse(tournamentText);
+        var roundDescriptor = parser.parse(roundText);
         var lagoonDescriptor0 = roundDescriptor.getLagoonDescriptor(0);
 
         assertThat(roundDescriptor.getMaxDensity(), is(5.0));
@@ -50,7 +50,7 @@ public class RoundParseTest {
 
     @Test
     public void round_parse_without_defaults() {
-        var tournamentText = String.join("\n", "",
+        var roundText = String.join("\n", "",
                 "seatMilliseconds=60000",
                 "commandMilliseconds=30000",
                 "scoreMilliseconds=25000",
@@ -63,7 +63,7 @@ public class RoundParseTest {
         );
 
         var parser = new RoundParser(new PropsParser());
-        var roundDescriptor = parser.parse(tournamentText);
+        var roundDescriptor = parser.parse(roundText);
 
         var lagoonDescriptor0 = roundDescriptor.getLagoonDescriptor(0);
         var lagoonDescriptor1 = roundDescriptor.getLagoonDescriptor(1);
@@ -76,6 +76,31 @@ public class RoundParseTest {
         assertThat(roundDescriptor.getScoreMilliseconds(), is(25000L));
         assertThat(lagoonDescriptor0.getFishPopulation(), is(5L));
         assertThat(lagoonDescriptor1.getFishPopulation(), is(50L));
+    }
+
+    @Test
+    public void parse_multiple_rounds() {
+        var tournamentText = String.join("\n", "",
+                "weekCount=4",
+                "---",
+                "weekCount=5");
+
+        var parser = new RoundParser(new PropsParser());
+        var roundDescriptors = parser.parseRounds(tournamentText);
+
+        assertThat(roundDescriptors, contains(
+                hasProperty("weekCount", is(4)),
+                hasProperty("weekCount", is(5))));
+    }
+
+    @Test
+    public void parse_multiple_rounds_of_an_empty_string_creates_a_tournament_of_a_single_default_round() {
+        var tournamentText = "";
+
+        var parser = new RoundParser(new PropsParser());
+        var roundDescriptors = parser.parseRounds(tournamentText);
+
+        assertThat(roundDescriptors, contains(hasProperty("weekCount", is(10))));
     }
 
 }

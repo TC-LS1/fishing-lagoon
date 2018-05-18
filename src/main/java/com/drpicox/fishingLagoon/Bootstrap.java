@@ -2,6 +2,8 @@ package com.drpicox.fishingLagoon;
 
 import com.drpicox.fishingLagoon.business.GameController;
 import com.drpicox.fishingLagoon.business.RoundsController;
+import com.drpicox.fishingLagoon.business.tournaments.SparringTournament;
+import com.drpicox.fishingLagoon.business.tournaments.Tournament;
 import com.drpicox.fishingLagoon.common.actions.ActionParser;
 import com.drpicox.fishingLagoon.business.AdminToken;
 import com.drpicox.fishingLagoon.business.BotsController;
@@ -124,10 +126,10 @@ public class Bootstrap {
             var roundsCommandsTable = new RoundsCommandsTable(getActionParser(), getConnection());
             var roundsDescriptionsTable = new RoundsDescriptorsTable(getConnection(), getRoundParser());
             var roundsSeatsTable = new RoundsSeatsTable(getConnection());
-            var roundsStartsTable = new RoundsStartsTable(getConnection());
+            var roundsStartsTable = new RoundsMetadataTable(getConnection());
             var roundsStore = new RoundsStore(roundsStartsTable, roundsDescriptionsTable, roundsSeatsTable, roundsCommandsTable);
             var idGenerator = getIdGenerator("round");
-            roundsController = new RoundsController(idGenerator, roundsStore);
+            roundsController = new RoundsController(idGenerator, roundsStore, getTournament());
         }
         return roundsController;
     }
@@ -140,5 +142,15 @@ public class Bootstrap {
         return roundParser;
     }
 
-
+    private Tournament tournament;
+    public Tournament getTournament() {
+        if (tournament == null) {
+            tournament = new SparringTournament();
+        }
+        return tournament;
+    }
+    public void configureTournament(Tournament tournament) {
+        if (this.tournament != null) throw new IllegalStateException("tournament already instanced");
+        this.tournament = tournament;
+    }
 }

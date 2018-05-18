@@ -2,6 +2,7 @@ package com.drpicox.fishingLagoon.common.parser;
 
 import com.drpicox.fishingLagoon.business.rounds.LagoonDescriptor;
 import com.drpicox.fishingLagoon.business.rounds.RoundDescriptor;
+import com.drpicox.fishingLagoon.business.tournaments.Tournament;
 
 import java.util.*;
 
@@ -18,6 +19,18 @@ public class RoundParser {
         State state = new State(props);
 
         return state.getRound();
+    }
+
+    public List<RoundDescriptor> parseRounds(String tournamentText) {
+        var result = new ArrayList<RoundDescriptor>();
+
+        var roundTexts = tournamentText.split("\n---[^\n]*\n");
+        for (var roundText: roundTexts) {
+            var round = parse(roundText);
+            result.add(round);
+        }
+
+        return result;
     }
 
     public String stringify(RoundDescriptor round) {
