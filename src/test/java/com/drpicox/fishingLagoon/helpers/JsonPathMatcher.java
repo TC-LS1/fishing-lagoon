@@ -1,12 +1,9 @@
-package com.drpicox.fishingLagoon;
+package com.drpicox.fishingLagoon.helpers;
 
-import com.google.gson.JsonObject;
 import com.nebhale.jsonpath.JsonPath;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-
-import java.util.Map;
 
 public class JsonPathMatcher extends BaseMatcher {
 

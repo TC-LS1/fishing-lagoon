@@ -1,7 +1,6 @@
 package com.drpicox.fishingLagoon.business.scores;
 
 
-import com.drpicox.fishingLagoon.business.bots.BotId;
 import com.drpicox.fishingLagoon.business.rounds.Round;
 import com.drpicox.fishingLagoon.common.TimeStamp;
 import com.drpicox.fishingLagoon.common.parser.PropsParser;
@@ -12,6 +11,7 @@ import org.junit.Test;
 import java.util.Arrays;
 
 import static com.drpicox.fishingLagoon.common.actions.Actions.fish;
+import static com.drpicox.fishingLagoon.helpers.Helpers.bot;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -65,10 +65,6 @@ public class RoundCommandingTest {
         var roundDescriptor = new RoundParser(new PropsParser()).parse(roundText);
         var round = new Round(new RoundId("r0"), new TimeStamp(0L), roundDescriptor);
         return round;
-    }
-
-    private static BotId bot(int n) {
-        return new BotId("bot" + n);
     }
 
 

@@ -7,13 +7,9 @@ import com.drpicox.fishingLagoon.presentation.limits.BotsQueryLimits;
 import org.junit.Before;
 import org.junit.Test;
 
-import static com.drpicox.fishingLagoon.JsonPathMatcher.jsonPath;
-import static org.junit.Assert.assertThat;
+import static com.drpicox.fishingLagoon.helpers.Helpers.*;
 
 public class BotsQueryLimitsTest {
-
-    private static final long SECOND = 1000L;
-    private static final long MINUTE = 60 * SECOND;
 
     private BotsQueryLimits limits;
 
@@ -119,14 +115,6 @@ public class BotsQueryLimitsTest {
         manyAccesses(4, token(1), ts(0 * SECOND));
         limits.verifyAccess(token(1), ts(0 * SECOND));
         limits.trackAccess(token(1), ts(0 * SECOND));
-    }
-
-    private static BotToken token(int n) {
-        return new BotToken("token" + n);
-    }
-
-    private static TimeStamp ts(long n) {
-        return new TimeStamp(n);
     }
 
 

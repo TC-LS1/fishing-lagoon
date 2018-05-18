@@ -9,6 +9,7 @@ import com.drpicox.fishingLagoon.common.parser.RoundParser;
 import com.drpicox.fishingLagoon.business.rounds.RoundId;
 import org.junit.Test;
 
+import static com.drpicox.fishingLagoon.helpers.Helpers.bot;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -97,10 +98,6 @@ public class RoundSeatingTest {
         var roundText = String.join("\n", roundTextLines);
         var roundDescriptor = new RoundParser(new PropsParser()).parse(roundText);
         return new Round(new RoundId("r0"), new TimeStamp(0L), roundDescriptor);
-    }
-
-    private static BotId bot(int n) {
-        return new BotId("bot" + n);
     }
 
 }

@@ -87,8 +87,4 @@ public class RoundCreatedTest {
         return new Round(new RoundId("r0"), new TimeStamp(0L), roundDescriptor);
     }
 
-    private static BotId bot(int id) {
-        return new BotId("bot" + id);
-    }
-
 }

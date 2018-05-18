@@ -15,6 +15,7 @@ import org.junit.Test;
 
 import static com.drpicox.fishingLagoon.common.actions.Actions.fish;
 
+import static com.drpicox.fishingLagoon.helpers.Helpers.bot;
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -167,9 +168,6 @@ public class RoundScoringTest {
         return new Round(new RoundId("r0"), new TimeStamp(0L), roundDescriptor);
     }
 
-    private static BotId bot(int n) {
-        return new BotId("bot" + n);
-    }
 
 
 }

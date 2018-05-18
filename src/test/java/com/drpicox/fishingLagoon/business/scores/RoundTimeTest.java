@@ -9,6 +9,7 @@ import com.drpicox.fishingLagoon.business.rounds.RoundId;
 import org.junit.Test;
 
 import static com.drpicox.fishingLagoon.business.rounds.RoundTimeState.*;
+import static com.drpicox.fishingLagoon.helpers.Helpers.ts;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -25,8 +26,8 @@ public class RoundTimeTest {
     public void round_time_state_created() {
         var round = createRound();
 
-        var state0 = round.getState(new TimeStamp(0L));
-        var state9 = round.getState(new TimeStamp(9L));
+        var state0 = round.getState(ts(0L));
+        var state9 = round.getState(ts(9L));
 
         assertThat(state0, is(CREATED));
         assertThat(state9, is(CREATED));
@@ -42,8 +43,8 @@ public class RoundTimeTest {
     public void round_time_state_seating() {
         var round = createRound();
 
-        var state10 = round.getState(new TimeStamp(10L));
-        var state29 = round.getState(new TimeStamp(29L));
+        var state10 = round.getState(ts(10L));
+        var state29 = round.getState(ts(29L));
 
         assertThat(state10, is(SEATING));
         assertThat(state29, is(SEATING));
@@ -59,8 +60,8 @@ public class RoundTimeTest {
     public void round_time_state_commanding() {
         var round = createRound();
 
-        var state30 = round.getState(new TimeStamp(30L));
-        var state59 = round.getState(new TimeStamp(59L));
+        var state30 = round.getState(ts(30L));
+        var state59 = round.getState(ts(59L));
 
         assertThat(state30, is(COMMANDING));
         assertThat(state59, is(COMMANDING));
@@ -76,8 +77,8 @@ public class RoundTimeTest {
     public void round_time_state_scoring() {
         var round = createRound();
 
-        var state60 = round.getState(new TimeStamp(60L));
-        var state99 = round.getState(new TimeStamp(99L));
+        var state60 = round.getState(ts(60L));
+        var state99 = round.getState(ts(99L));
 
         assertThat(state60, is(SCORING));
         assertThat(state99, is(SCORING));
@@ -93,8 +94,8 @@ public class RoundTimeTest {
     public void round_time_state_finished() {
         var round = createRound();
 
-        var state100 = round.getState(new TimeStamp(100L));
-        var state5000 = round.getState(new TimeStamp(5000L));
+        var state100 = round.getState(ts(100L));
+        var state5000 = round.getState(ts(5000L));
 
         assertThat(state100, is(FINISHED));
         assertThat(state5000, is(FINISHED));
@@ -109,10 +110,6 @@ public class RoundTimeTest {
     private static Round parse(long startTs, String... roundTextLines) {
         var roundText = String.join("\n", roundTextLines);
         var roundDescriptor = new RoundParser(new PropsParser()).parse(roundText);
-        return new Round(new RoundId("r0"), new TimeStamp(startTs), roundDescriptor);
-    }
-
-    private static TimeStamp ts(long milliseconds) {
-        return new TimeStamp(milliseconds);
+        return new Round(new RoundId("r0"), ts(startTs), roundDescriptor);
     }
 }

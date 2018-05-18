@@ -2,13 +2,14 @@ package com.drpicox.fishingLagoon;
 
 import com.drpicox.fishingLagoon.business.AdminToken;
 import com.drpicox.fishingLagoon.business.bots.BotId;
-import com.drpicox.fishingLagoon.business.bots.BotToken;
+import com.drpicox.fishingLagoon.helpers.TestBootstrap;
 import com.drpicox.fishingLagoon.presentation.GamePresentation;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.SQLException;
 
+import static com.drpicox.fishingLagoon.helpers.Helpers.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -27,8 +28,8 @@ public class GameBotsTest {
 
     @Test
     public void bots_create() throws SQLException {
-        var bot1 = gamePresentation.createBot(botToken("token1"), adminToken);
-        var bot2 = gamePresentation.createBot(botToken("token2"), adminToken);
+        var bot1 = gamePresentation.createBot(token(1), adminToken);
+        var bot2 = gamePresentation.createBot(token(2), adminToken);
         var bots = gamePresentation.listBots();
 
         assertThat(bot1, hasProperty("id", is(bot(1))));
@@ -42,14 +43,14 @@ public class GameBotsTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void bots_create_fails_if_admin_token_does_not_match() throws SQLException {
-        gamePresentation.createBot(botToken("token1"), new AdminToken("wrongToken"));
+        gamePresentation.createBot(token(1), new AdminToken("wrongToken"));
     }
 
     @Test
     public void bots_update() throws SQLException {
-        var bot1c = gamePresentation.createBot(botToken("token1"), adminToken);
-        var bot2c = gamePresentation.createBot(botToken("token2"), adminToken);
-        var bot1u = gamePresentation.updateBot(botToken("token1"), "GERTY");
+        var bot1c = gamePresentation.createBot(token(1), adminToken);
+        var bot2c = gamePresentation.createBot(token(2), adminToken);
+        var bot1u = gamePresentation.updateBot(token(1), "GERTY");
 
         var bot1g = gamePresentation.getBot(bot(1));
         var bot2g = gamePresentation.getBot(bot(2));
@@ -66,12 +67,8 @@ public class GameBotsTest {
         assertThat(bots, hasItem(samePropertyValuesAs(bot2g)));
     }
 
-
     private static BotId bot(int n) {
         return new BotId("bot" + n);
     }
 
-    private BotToken botToken(String v) {
-        return new BotToken(v);
-    }
 }
