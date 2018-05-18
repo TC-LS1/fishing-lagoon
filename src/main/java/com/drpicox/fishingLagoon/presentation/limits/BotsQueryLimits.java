@@ -20,10 +20,10 @@ public class BotsQueryLimits {
         queryLimit.trackAccess(ts);
     }
 
-    public void fastCheckAccess(BotToken token, TimeStamp ts) {
+    public void verifyAccess(BotToken token, TimeStamp ts) {
         var queryLimit = limits.get(token);
         if (queryLimit == null) return;
 
-        queryLimit.fastCheckAccess(ts);
+        queryLimit.verifyAccess(ts);
     }
 }

@@ -75,4 +75,8 @@ public class RoundPresentation {
     public BotId getSelfId() {
         return new BotId(selfId);
     }
+
+    public long getTotalMilliseconds() {
+        return endTs - startTs;
+    }
 }

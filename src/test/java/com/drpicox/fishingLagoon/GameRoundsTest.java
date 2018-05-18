@@ -29,6 +29,8 @@ public class GameRoundsTest {
     private Gson gson;
     private GamePresentation gamePresentation;
 
+    private static final long SECOND = 1000L;
+    private static final long MINUTE = 60 * SECOND;
     private static final long SEAT_MILLISECONDS = 20000L;
     private static final long COMMAND_MILLISECONDS = 20000L;
     private static final long SCORE_MILLISECONDS = 20000L;
@@ -86,19 +88,60 @@ public class GameRoundsTest {
     }
 
     @Test
-    public void rounds_create_cannot_work_with_less_than_one_minute_round() throws SQLException {
-        var roundText = ROUND_TEXT + "\nseatMilliseconds=" + (SEAT_MILLISECONDS - 1);
+    public void rounds_create_fastest_round_with_all_phases_lasting_5_seconds() throws SQLException {
+        var roundText = "" +
+                "seatMilliseconds=" + (5 * SECOND) + "\n" +
+                "commandMilliseconds=" + (5 * SECOND) + "\n" +
+                "scoreMilliseconds=" + (5 * SECOND) + "\n";
 
-        IllegalArgumentException exceptionFound = null;
-        try {
-            gamePresentation.createRound(roundText, botToken("token1"), ts(0L));
-        } catch (IllegalArgumentException e) {
-            exceptionFound = e;
-        }
+        var round = gamePresentation.createRound(roundText, botToken("token1"), ts(0L));
+        assertThat(round, hasProperty("totalMilliseconds", is(3 * 5 * SECOND)));
+    }
 
-        var rounds = gamePresentation.listRounds();
-        assertThat(rounds, is(empty()));
-        assertThat(exceptionFound, is(not(nullValue())));
+    @Test
+    public void rounds_create_slowest_round_with_all_phases_lasting_1_minute() throws SQLException {
+        var roundText = "" +
+                "seatMilliseconds=" + (1 * MINUTE) + "\n" +
+                "commandMilliseconds=" + (1 * MINUTE) + "\n" +
+                "scoreMilliseconds=" + (1 * MINUTE) + "\n";
+
+        var round = gamePresentation.createRound(roundText, botToken("token1"), ts(0L));
+        assertThat(round, hasProperty("totalMilliseconds", is(3 * MINUTE)));
+    }
+    @Test(expected = IllegalArgumentException.class)
+    public void rounds_create_fails_if_seat_phase_lasts_less_than_5_seconds() throws SQLException {
+        var roundText = "seatMilliseconds=" + (5 * SECOND - 1L);
+        gamePresentation.createRound(roundText, botToken("token1"), ts(0L));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void rounds_create_fails_if_command_phase_lasts_less_than_5_seconds() throws SQLException {
+        var roundText = "commandMilliseconds=" + (5 * SECOND - 1L);
+        gamePresentation.createRound(roundText, botToken("token1"), ts(0L));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void rounds_create_fails_if_score_phase_lasts_less_than_5_seconds() throws SQLException {
+        var roundText = "scoreMilliseconds=" + (5 * SECOND - 1L);
+        gamePresentation.createRound(roundText, botToken("token1"), ts(0L));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void rounds_create_fails_if_seat_phase_lasts_more_than_one_minute() throws SQLException {
+        var roundText = "seatMilliseconds=" + (MINUTE + 1L);
+        gamePresentation.createRound(roundText, botToken("token1"), ts(0L));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void rounds_create_fails_if_command_phase_lasts_more_than_one_minute() throws SQLException {
+        var roundText = "commandMilliseconds=" + (MINUTE + 1L);
+        gamePresentation.createRound(roundText, botToken("token1"), ts(0L));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void rounds_create_fails_if_score_phase_lasts_more_than_one_minute() throws SQLException {
+        var roundText = "scoreMilliseconds=" + (MINUTE + 1L);
+        gamePresentation.createRound(roundText, botToken("token1"), ts(0L));
     }
 
     @Test
