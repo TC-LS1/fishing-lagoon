@@ -15,7 +15,7 @@ public class BotQueryLimit {
     private long penalisedUntil = Long.MIN_VALUE;
 
 
-    public void fastCheckAccess(TimeStamp ts) {
+    public void verifyAccess(TimeStamp ts) {
         var milliseconds = ts.getMilliseconds();
 
         if (penalisedUntil > milliseconds) {
@@ -29,7 +29,7 @@ public class BotQueryLimit {
     }
 
     public void trackAccess(TimeStamp ts) {
-        fastCheckAccess(ts);
+        verifyAccess(ts);
 
         var milliseconds = ts.getMilliseconds();
         shiftWindow(milliseconds);

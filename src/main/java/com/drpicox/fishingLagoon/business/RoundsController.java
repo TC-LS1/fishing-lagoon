@@ -13,7 +13,8 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class RoundsController {
-    private static final long MIN_ROUND_DURATION = 60000L;
+    private static final long MIN_PHASE_DURATION = 5000L;
+    private static final long MAX_PHASE_DURATION = 60000L;
 
     private IdGenerator idGenerator;
     private RoundsStore roundsStore;
@@ -24,13 +25,22 @@ public class RoundsController {
     }
 
     public Round create(RoundDescriptor descriptor, TimeStamp now) throws SQLException {
-        if (descriptor.getTotalMilliseconds() < MIN_ROUND_DURATION) throw new IllegalArgumentException("Round too fast");
+        verifyRoundDuration(descriptor);
         if (hasActiveRound(now)) throw new IllegalArgumentException("There is an active round");
 
         var id = new RoundId(idGenerator.next());
         var round = new Round(id, now, descriptor);
 
         return roundsStore.save(round);
+    }
+
+    private void verifyRoundDuration(RoundDescriptor descriptor) {
+        if (descriptor.getSeatMilliseconds() < MIN_PHASE_DURATION) throw new IllegalArgumentException("Round seat phase duration cannot take less than " + (MIN_PHASE_DURATION / 1000L) + " seconds");
+        if (descriptor.getCommandMilliseconds() < MIN_PHASE_DURATION) throw new IllegalArgumentException("Round command phase duration cannot take less than " + (MIN_PHASE_DURATION / 1000L) + " seconds");
+        if (descriptor.getScoreMilliseconds() < MIN_PHASE_DURATION) throw new IllegalArgumentException("Round score phase duration cannot take less than " + (MIN_PHASE_DURATION / 1000L) + " seconds");
+        if (descriptor.getSeatMilliseconds() > MAX_PHASE_DURATION) throw new IllegalArgumentException("Round seat phase duration cannot take more than " + (MAX_PHASE_DURATION / 1000L) + " seconds");
+        if (descriptor.getCommandMilliseconds() > MAX_PHASE_DURATION) throw new IllegalArgumentException("Round command phase duration cannot take more than " + (MAX_PHASE_DURATION / 1000L) + " seconds");
+        if (descriptor.getScoreMilliseconds() > MAX_PHASE_DURATION) throw new IllegalArgumentException("Round score phase duration cannot take more than " + (MAX_PHASE_DURATION / 1000L) + " seconds");
     }
 
     public List<Round> list() throws SQLException {

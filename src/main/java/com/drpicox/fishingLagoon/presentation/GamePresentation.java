@@ -5,7 +5,6 @@ import com.drpicox.fishingLagoon.business.GameController;
 import com.drpicox.fishingLagoon.business.bots.Bot;
 import com.drpicox.fishingLagoon.business.bots.BotId;
 import com.drpicox.fishingLagoon.business.bots.BotToken;
-import com.drpicox.fishingLagoon.business.rounds.Round;
 import com.drpicox.fishingLagoon.business.rounds.RoundId;
 import com.drpicox.fishingLagoon.business.rules.FishingLagoonRules;
 import com.drpicox.fishingLagoon.common.TimeStamp;
@@ -13,7 +12,6 @@ import com.drpicox.fishingLagoon.common.actions.Action;
 import com.drpicox.fishingLagoon.presentation.limits.BotsQueryLimits;
 
 import java.sql.SQLException;
-import java.sql.Time;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -82,7 +80,7 @@ public class GamePresentation {
     }
 
     private BotId getBotId(BotToken token, TimeStamp now) throws SQLException {
-        limits.fastCheckAccess(token, now);
+        limits.verifyAccess(token, now);
 
         Bot bot = game.getBotByToken(token);
         if (bot == null) throw new IllegalArgumentException("Invalid bot token");
@@ -92,7 +90,7 @@ public class GamePresentation {
     }
 
     private BotId mayGetBotId(BotToken token, TimeStamp now) throws SQLException {
-        limits.fastCheckAccess(token, now);
+        limits.verifyAccess(token, now);
         boolean isEmptyToken = token != null && token.equals(new BotToken(""));
         if (isEmptyToken) return null;
 

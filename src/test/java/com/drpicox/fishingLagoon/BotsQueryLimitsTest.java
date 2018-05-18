@@ -1,22 +1,13 @@
 package com.drpicox.fishingLagoon;
 
-import com.drpicox.fishingLagoon.business.AdminToken;
 import com.drpicox.fishingLagoon.business.bots.BotToken;
 import com.drpicox.fishingLagoon.common.TimeStamp;
 import com.drpicox.fishingLagoon.presentation.limits.BotsQueryLimits;
 
-import java.sql.SQLException;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-
 import static com.drpicox.fishingLagoon.JsonPathMatcher.jsonPath;
-import static com.drpicox.fishingLagoon.common.actions.Actions.fish;
-import static com.drpicox.fishingLagoon.common.actions.Actions.rest;
-import static java.util.Arrays.asList;
-import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class BotsQueryLimitsTest {
@@ -106,13 +97,13 @@ public class BotsQueryLimitsTest {
 
     @Test
     public void it_has_a_fast_check_that_do_not_fails_if_legal() {
-        limits.fastCheckAccess(token(1), ts(0 * SECOND));
+        limits.verifyAccess(token(1), ts(0 * SECOND));
     }
 
     @Test(expected = IllegalStateException.class)
     public void it_has_a_fast_check_that_fails_if_illegal() {
         manyAccesses(5, token(1), ts(0 * SECOND));
-        limits.fastCheckAccess(token(1), ts(0 * SECOND));
+        limits.verifyAccess(token(1), ts(0 * SECOND));
     }
 
     @Test(expected = IllegalStateException.class)
@@ -120,13 +111,13 @@ public class BotsQueryLimitsTest {
         manyAccesses(5, token(1), ts(0 * SECOND));
         makeIllegalAccess(token(1), ts(0 * SECOND));
 
-        limits.fastCheckAccess(token(1), ts(1 * MINUTE - 1));
+        limits.verifyAccess(token(1), ts(1 * MINUTE - 1));
     }
 
     @Test
     public void it_has_a_fast_check_that_does_not_track_an_access() {
         manyAccesses(4, token(1), ts(0 * SECOND));
-        limits.fastCheckAccess(token(1), ts(0 * SECOND));
+        limits.verifyAccess(token(1), ts(0 * SECOND));
         limits.trackAccess(token(1), ts(0 * SECOND));
     }
 
