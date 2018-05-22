@@ -3,7 +3,6 @@ package com.drpicox.fishingLagoon.business;
 import com.drpicox.fishingLagoon.business.rounds.Round;
 import com.drpicox.fishingLagoon.business.rounds.RoundDescriptor;
 import com.drpicox.fishingLagoon.business.rounds.RoundId;
-import com.drpicox.fishingLagoon.business.tournaments.Tournament;
 import com.drpicox.fishingLagoon.business.tournaments.TournamentId;
 import com.drpicox.fishingLagoon.persistence.RoundsStore;
 import com.drpicox.fishingLagoon.business.bots.BotId;
@@ -21,16 +20,13 @@ public class RoundsController {
 
     private IdGenerator idGenerator;
     private RoundsStore roundsStore;
-    private Tournament tournament;
 
-    public RoundsController(IdGenerator idGenerator, RoundsStore roundsStore, Tournament tournament) {
+    public RoundsController(IdGenerator idGenerator, RoundsStore roundsStore) {
         this.idGenerator = idGenerator;
         this.roundsStore = roundsStore;
-        this.tournament = tournament;
     }
 
     public Round create(RoundDescriptor descriptor, TimeStamp now) throws SQLException {
-        tournament.verifyRoundCreation(descriptor, now);
         verifyRoundDuration(descriptor);
         if (hasActiveRound(now)) throw new IllegalArgumentException("There is an active round");
 
@@ -40,14 +36,19 @@ public class RoundsController {
         return roundsStore.save(round);
     }
 
-    public List<Round> createTournamentRounds(TournamentId tournamentId, List<RoundDescriptor> descriptors, TimeStamp now) {
-        tournament.verifyTournamentRoundCreation(tournamentId, descriptors, now);
-
+    public List<Round> createTournamentRounds(TournamentId tournamentId, List<RoundDescriptor> descriptors, TimeStamp now) throws SQLException {
         var nextStartTs = now;
+
+        var lastRound = roundsStore.getLastRound();
+        if (lastRound != null && lastRound.getEndTs().getMilliseconds() > nextStartTs.getMilliseconds()) {
+            nextStartTs = lastRound.getEndTs();
+        }
+
         var result = new ArrayList<Round>();
         for (var descriptor: descriptors) {
             var id = new RoundId(idGenerator.next());
             var round = new Round(id, tournamentId, nextStartTs, descriptor);
+            roundsStore.save(round);
             result.add(round);
             nextStartTs = round.getEndTs();
         }
@@ -66,6 +67,10 @@ public class RoundsController {
 
     public List<Round> list() throws SQLException {
         return roundsStore.list();
+    }
+
+    public List<Round> listActives(BotId botId, TimeStamp now) throws SQLException {
+        return roundsStore.listActives(now);
     }
 
     public Round getRound(RoundId id) throws SQLException {

@@ -5,6 +5,7 @@ import com.drpicox.fishingLagoon.business.GameController;
 import com.drpicox.fishingLagoon.business.bots.Bot;
 import com.drpicox.fishingLagoon.business.bots.BotId;
 import com.drpicox.fishingLagoon.business.bots.BotToken;
+import com.drpicox.fishingLagoon.business.rounds.RoundCommands;
 import com.drpicox.fishingLagoon.business.rounds.RoundId;
 import com.drpicox.fishingLagoon.business.rules.FishingLagoonRules;
 import com.drpicox.fishingLagoon.business.tournaments.TournamentId;
@@ -53,7 +54,7 @@ public class GamePresentation {
         return RoundPresentation.from(game.createRound(roundText, now), now, botId, rules);
     }
 
-    public List<RoundPresentation> createTournamentRounds(TournamentId tournamentId, String tournamentText, AdminToken adminToken, TimeStamp now) {
+    public List<RoundPresentation> createTournamentRounds(TournamentId tournamentId, String tournamentText, AdminToken adminToken, TimeStamp now) throws SQLException {
         return game
                 .createTournamentRounds(tournamentId, tournamentText, adminToken, now)
                 .stream()
@@ -72,8 +73,7 @@ public class GamePresentation {
 
     public List<RoundPresentation> listActiveRounds(BotToken token, TimeStamp now) throws SQLException {
         BotId botId = mayGetBotId(token, now);
-        return game.listRounds().stream()
-                .filter(round -> round.getState(now).isActive())
+        return game.listActiveRounds(botId, now).stream()
                 .map(round -> RoundPresentation.from(round, now, botId, rules))
                 .collect(Collectors.toList());
     }
@@ -109,5 +109,9 @@ public class GamePresentation {
 
         limits.trackAccess(token, now);
         return bot.getId();
+    }
+
+    public void setTournamentMode(boolean tournamentMode) {
+        game.setTournamentMode(tournamentMode);
     }
 }

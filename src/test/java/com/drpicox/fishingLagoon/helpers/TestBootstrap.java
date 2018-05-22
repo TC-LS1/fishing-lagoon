@@ -15,15 +15,7 @@ import java.util.Map;
 public class TestBootstrap extends Bootstrap {
 
     public TestBootstrap(AdminToken adminToken) {
-        super(adminToken);
-    }
-
-    private Connection connection;
-    public Connection getConnection() throws SQLException {
-        if (connection == null) {
-            connection = DriverManager.getConnection("jdbc:h2:mem:", "sa", "");
-        }
-        return connection;
+        super(adminToken, "mem:");
     }
 
     private Map<String,IdGenerator> idGenerators = new HashMap<>();

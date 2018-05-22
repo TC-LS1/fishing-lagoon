@@ -1,7 +1,9 @@
 package com.drpicox.fishingLagoon.persistence;
 
+import com.drpicox.fishingLagoon.business.bots.BotId;
 import com.drpicox.fishingLagoon.business.rounds.Round;
 import com.drpicox.fishingLagoon.business.rounds.RoundId;
+import com.drpicox.fishingLagoon.common.TimeStamp;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -32,10 +34,28 @@ public class RoundsStore {
         return new Round(metadata, descriptor, seats, commands);
     }
 
+    public Round getLastRound() throws SQLException {
+        var id = metadataTable.getLastRoundId();
+        if (id == null) return null;
+
+        return get(id);
+    }
+
     public List<Round> list() throws SQLException {
         List<Round> result = new ArrayList<>();
 
         var ids = metadataTable.listIds();
+        for (var id: ids) {
+            result.add(get(id));
+        }
+
+        return result;
+    }
+
+    public List<Round> listActives(TimeStamp now) throws SQLException {
+        List<Round> result = new ArrayList<>();
+
+        var ids = metadataTable.listActiveIds(now);
         for (var id: ids) {
             result.add(get(id));
         }
@@ -48,7 +68,7 @@ public class RoundsStore {
         descriptorsTable.save(id, round.getDescriptor());
         seatsTable.save(id, round.getSeats());
         commandsTable.save(id, round.getCommands());
-        metadataTable.save(id, round.getStartTs());
+        metadataTable.save(round.getMetadata());
         return round;
     }
 }

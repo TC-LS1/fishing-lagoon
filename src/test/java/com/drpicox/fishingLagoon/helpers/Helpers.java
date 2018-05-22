@@ -26,8 +26,11 @@ public class Helpers {
     public static RoundId round(int n) {
         return new RoundId("round" + n);
     }
-    public static TournamentId tournament(int n) {
-        return new TournamentId("tournament" + n);
+    public static TournamentId tournament() {
+        return new TournamentId("SPARRING");
+    }
+    public static TournamentId tournament(String n) {
+        return new TournamentId(n);
     }
 
     public static TimeStamp ts(long n) {

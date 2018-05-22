@@ -19,12 +19,17 @@ public class GameController {
     private BotsController botsController;
     private RoundsController roundsController;
     private RoundParser roundParser;
+    private boolean tournamentMode;
 
     public GameController(AdminToken adminToken, BotsController botsController, RoundsController roundsController, RoundParser roundParser) {
         this.adminToken = adminToken;
         this.botsController = botsController;
         this.roundsController = roundsController;
         this.roundParser = roundParser;
+    }
+
+    public synchronized void setTournamentMode(boolean tournamentMode) {
+        this.tournamentMode = tournamentMode;
     }
 
     public synchronized Bot createBot(BotToken botToken, AdminToken adminToken) throws SQLException {
@@ -50,11 +55,13 @@ public class GameController {
     }
 
     public synchronized Round createRound(String roundText, TimeStamp now) throws SQLException {
+        if (tournamentMode == true) throw new IllegalStateException("Cannot create sparring rounds because tournament mode is ON");
+        
         var descriptor = roundParser.parse(roundText);
         return roundsController.create(descriptor, now);
     }
 
-    public synchronized List<Round> createTournamentRounds(TournamentId tournamentId, String tournamentText, AdminToken adminToken, TimeStamp now) {
+    public synchronized List<Round> createTournamentRounds(TournamentId tournamentId, String tournamentText, AdminToken adminToken, TimeStamp now) throws SQLException {
         if (!this.adminToken.validate(adminToken)) throw new IllegalArgumentException("Invalid adminToken");
 
         var descriptors = roundParser.parseRounds(tournamentText);
@@ -67,6 +74,10 @@ public class GameController {
 
     public synchronized List<Round> listRounds() throws SQLException {
         return roundsController.list();
+    }
+
+    public synchronized List<Round> listActiveRounds(BotId botId, TimeStamp now) throws SQLException {
+        return roundsController.listActives(botId, now);
     }
 
     public synchronized Round seatBot(RoundId roundId, BotId botId, int lagoonIndex, TimeStamp ts) throws SQLException {
@@ -82,5 +93,4 @@ public class GameController {
         if (bot == null) throw new IllegalArgumentException("Invalid bot token");
         return bot.getId();
     }
-
 }

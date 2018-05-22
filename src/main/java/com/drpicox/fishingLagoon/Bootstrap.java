@@ -2,8 +2,6 @@ package com.drpicox.fishingLagoon;
 
 import com.drpicox.fishingLagoon.business.GameController;
 import com.drpicox.fishingLagoon.business.RoundsController;
-import com.drpicox.fishingLagoon.business.tournaments.SparringTournament;
-import com.drpicox.fishingLagoon.business.tournaments.Tournament;
 import com.drpicox.fishingLagoon.common.actions.ActionParser;
 import com.drpicox.fishingLagoon.business.AdminToken;
 import com.drpicox.fishingLagoon.business.BotsController;
@@ -31,15 +29,16 @@ import static java.util.Arrays.asList;
 public class Bootstrap {
 
     private AdminToken adminToken;
+    private String databaseFile;
 
-    public Bootstrap(AdminToken adminToken) {
+    public Bootstrap(AdminToken adminToken, String databaseFile) {
         this.adminToken = adminToken;
+        this.databaseFile = databaseFile;
     }
 
     private Connection connection;
     public Connection getConnection() throws SQLException {
         if (connection == null) {
-            var databaseFile = System.getenv("FISHING_LAGOON_DATABASE_FILE");
             connection = DriverManager.getConnection("jdbc:h2:" + databaseFile, "sa", "");
         }
         return connection;
@@ -123,15 +122,23 @@ public class Bootstrap {
     private RoundsController roundsController;
     public RoundsController getRoundsController() throws SQLException {
         if (roundsController == null) {
+            var roundsStore = getRoundsStore();
+            var idGenerator = getIdGenerator("round");
+            roundsController = new RoundsController(idGenerator, roundsStore);
+        }
+        return roundsController;
+    }
+
+    private RoundsStore roundsStore;
+    private RoundsStore getRoundsStore() throws SQLException {
+        if (roundsStore == null) {
             var roundsCommandsTable = new RoundsCommandsTable(getActionParser(), getConnection());
             var roundsDescriptionsTable = new RoundsDescriptorsTable(getConnection(), getRoundParser());
             var roundsSeatsTable = new RoundsSeatsTable(getConnection());
             var roundsStartsTable = new RoundsMetadataTable(getConnection());
-            var roundsStore = new RoundsStore(roundsStartsTable, roundsDescriptionsTable, roundsSeatsTable, roundsCommandsTable);
-            var idGenerator = getIdGenerator("round");
-            roundsController = new RoundsController(idGenerator, roundsStore, getTournament());
+            roundsStore = new RoundsStore(roundsStartsTable, roundsDescriptionsTable, roundsSeatsTable, roundsCommandsTable);
         }
-        return roundsController;
+        return roundsStore;
     }
 
     private RoundParser roundParser;
@@ -140,17 +147,5 @@ public class Bootstrap {
             roundParser = new RoundParser(new PropsParser());
         }
         return roundParser;
-    }
-
-    private Tournament tournament;
-    public Tournament getTournament() {
-        if (tournament == null) {
-            tournament = new SparringTournament();
-        }
-        return tournament;
-    }
-    public void configureTournament(Tournament tournament) {
-        if (this.tournament != null) throw new IllegalStateException("tournament already instanced");
-        this.tournament = tournament;
     }
 }

@@ -32,7 +32,7 @@ public class Round {
     }
 
     public Round(RoundId id, TimeStamp startTs, RoundDescriptor descriptor) {
-        this(id, TournamentId.DEFAULT, startTs, descriptor);
+        this(id, TournamentId.SPARRING, startTs, descriptor);
     }
 
     public RoundId getId() {
@@ -48,9 +48,8 @@ public class Round {
     public RoundTimeState getState(TimeStamp nowTs) {
         return RoundTimeState.get(nowTs.getOffsetFrom(getStartTs()), descriptor);
     }
-
-    public RoundDescriptor getDescriptor() {
-        return descriptor;
+    public TournamentId getTournamentId() {
+        return metadata.getTournamentId();
     }
 
     public void seatBot(BotId bot, int lagoonIndex) {
@@ -64,9 +63,6 @@ public class Round {
     }
     public RoundSeat getSeat(BotId bot) {
         return seats.get(bot);
-    }
-    public RoundSeats getSeats() {
-        return seats;
     }
 
     public int countLagoons() {
@@ -96,6 +92,17 @@ public class Round {
         if (command == null) return RestAction.NOOP;
 
         return command.getAction(weekIndex);
+    }
+
+
+    public RoundMetadata getMetadata() {
+        return metadata;
+    }
+    public RoundDescriptor getDescriptor() {
+        return descriptor;
+    }
+    public RoundSeats getSeats() {
+        return seats;
     }
     public RoundCommands getCommands() {
         return commands;

@@ -12,6 +12,7 @@ import java.util.TreeMap;
 public class RoundPresentation {
 
     private String id;
+    private String tournamentId;
     private long startTs;
     private long endTs;
     private long nowTs;
@@ -36,6 +37,7 @@ public class RoundPresentation {
         this.id = round.getId().getValue();
         this.startTs = round.getStartTs().getMilliseconds();
         this.endTs = round.getEndTs().getMilliseconds();
+        this.tournamentId = round.getTournamentId().getValue();
     }
 
     private RoundPresentation(Round round, TimeStamp nowTs, BotId selfId, FishingLagoonRules rules) {

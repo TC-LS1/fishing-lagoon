@@ -2,7 +2,6 @@ package com.drpicox.fishingLagoon.common.parser;
 
 import com.drpicox.fishingLagoon.business.rounds.LagoonDescriptor;
 import com.drpicox.fishingLagoon.business.rounds.RoundDescriptor;
-import com.drpicox.fishingLagoon.business.tournaments.Tournament;
 
 import java.util.*;
 
@@ -24,11 +23,20 @@ public class RoundParser {
     public List<RoundDescriptor> parseRounds(String tournamentText) {
         var result = new ArrayList<RoundDescriptor>();
 
-        var roundTexts = tournamentText.split("\n---[^\n]*\n");
-        for (var roundText: roundTexts) {
-            var round = parse(roundText);
-            result.add(round);
+        var lines = tournamentText.split("\n");
+        var roundText = new StringBuilder();
+        for (var lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+            var line = lines[lineIndex];
+            if (line.matches("---[-\\s]*")) {
+                var round = parse(roundText.toString());
+                result.add(round);
+                roundText = new StringBuilder();
+            } else {
+                roundText.append(line).append("\n");
+            }
         }
+        var round = parse(roundText.toString());
+        result.add(round);
 
         return result;
     }

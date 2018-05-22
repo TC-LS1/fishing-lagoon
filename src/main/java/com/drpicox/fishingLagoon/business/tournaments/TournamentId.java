@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public class TournamentId {
 
-    public static final TournamentId DEFAULT = new TournamentId("DEFAULT");
+    public static final TournamentId SPARRING = new TournamentId("SPARRING");
     private String value;
 
     public TournamentId(String value) {

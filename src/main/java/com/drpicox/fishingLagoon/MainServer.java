@@ -10,12 +10,15 @@ public class MainServer {
 
     public static void main(String[] args) throws SQLException {
         var adminTokenString = System.getenv("FISHING_LAGOON_ADMIN_TOKEN");
+        var databaseFile = System.getenv("FISHING_LAGOON_DATABASE_FILE");
+        var tournamentMode = System.getenv("FISHING_LAGOON_TOURNAMENT_MODE");
         var adminToken = new AdminToken(adminTokenString);
 
-        var bootstrap = new Bootstrap(adminToken);
+        var bootstrap = new Bootstrap(adminToken, databaseFile);
         var restController = bootstrap.getRestServerController();
 
         generateBotTokens(bootstrap.getGameController(), adminToken);
+        setTournamentMode(bootstrap.getGameController(), tournamentMode);
 
         restController.start();
     }
@@ -32,6 +35,24 @@ public class MainServer {
             generateBotToken(common, token + "-1", gameController, adminToken);
             generateBotToken(common, token + "-2", gameController, adminToken);
         }
+    }
+
+    private static void setTournamentMode(GameController gameController, String tournamentMode) {
+        var mode = false;
+
+        if (tournamentMode != null) {
+            switch (tournamentMode.toLowerCase()) {
+                case "on":
+                case "1":
+                case "true":
+                case "t":
+                case "yes":
+                case "y":
+                    mode = true;
+            }
+        }
+
+        gameController.setTournamentMode(mode);
     }
 
     private static void generateBotToken(String common, String token, GameController gameController, AdminToken adminToken) {
