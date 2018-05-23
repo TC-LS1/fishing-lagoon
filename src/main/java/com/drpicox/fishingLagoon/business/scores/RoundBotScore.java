@@ -10,4 +10,11 @@ public class RoundBotScore {
     public long getScore() {
         return score;
     }
+
+    @Override
+    public String toString() {
+        return "RoundBotScore{" +
+                "score=" + score +
+                '}';
+    }
 }

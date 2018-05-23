@@ -40,4 +40,11 @@ public class RoundCommands {
     public Set<BotId> getBots() {
         return commands.keySet();
     }
+
+    @Override
+    public String toString() {
+        return "RoundCommands{" +
+                "commands=" + commands +
+                '}';
+    }
 }

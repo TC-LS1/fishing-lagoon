@@ -107,4 +107,15 @@ public class Round {
     public RoundCommands getCommands() {
         return commands;
     }
+
+
+    @Override
+    public String toString() {
+        return "Round{" +
+                "\n  metadata=" + metadata +
+                "\n, descriptor=" + descriptor +
+                "\n, seats=" + seats +
+                "\n, commands=" + commands +
+                '}';
+    }
 }

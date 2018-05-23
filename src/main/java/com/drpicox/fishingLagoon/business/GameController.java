@@ -5,27 +5,29 @@ import com.drpicox.fishingLagoon.business.bots.BotId;
 import com.drpicox.fishingLagoon.business.bots.BotToken;
 import com.drpicox.fishingLagoon.business.rounds.Round;
 import com.drpicox.fishingLagoon.business.rounds.RoundId;
+import com.drpicox.fishingLagoon.business.rules.FishingLagoonRules;
 import com.drpicox.fishingLagoon.business.tournaments.TournamentId;
 import com.drpicox.fishingLagoon.common.TimeStamp;
 import com.drpicox.fishingLagoon.common.actions.Action;
 import com.drpicox.fishingLagoon.common.parser.RoundParser;
 
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class GameController {
     private AdminToken adminToken;
     private BotsController botsController;
     private RoundsController roundsController;
     private RoundParser roundParser;
+    private FishingLagoonRules rules;
     private boolean tournamentMode;
 
-    public GameController(AdminToken adminToken, BotsController botsController, RoundsController roundsController, RoundParser roundParser) {
+    public GameController(AdminToken adminToken, BotsController botsController, RoundsController roundsController, RoundParser roundParser, FishingLagoonRules rules) {
         this.adminToken = adminToken;
         this.botsController = botsController;
         this.roundsController = roundsController;
         this.roundParser = roundParser;
+        this.rules = rules;
     }
 
     public synchronized void setTournamentMode(boolean tournamentMode) {
@@ -56,7 +58,7 @@ public class GameController {
 
     public synchronized Round createRound(String roundText, TimeStamp now) throws SQLException {
         if (tournamentMode == true) throw new IllegalStateException("Cannot create sparring rounds because tournament mode is ON");
-        
+
         var descriptor = roundParser.parse(roundText);
         return roundsController.create(descriptor, now);
     }
@@ -92,5 +94,30 @@ public class GameController {
         Bot bot = botsController.getBotByToken(token);
         if (bot == null) throw new IllegalArgumentException("Invalid bot token");
         return bot.getId();
+    }
+
+    public synchronized String getTournamentScores(TournamentId tournamentId, AdminToken adminToken) throws SQLException {
+        if (!this.adminToken.validate(adminToken)) throw new IllegalArgumentException("Invalid adminToken");
+
+        var tournamentRounds = roundsController.listTournamentRounds(tournamentId);
+
+        var scores = new HashMap<BotId, Long>();
+        for (var round: tournamentRounds) {
+            var roundScore = rules.score(round);
+            for (var bot: round.getBots()) {
+                long score = scores.getOrDefault(bot, 0L);
+                score += roundScore.getScore(bot);
+                scores.put(bot, score);
+            }
+        }
+
+        var results = new ArrayList<String>();
+        for (var botId: scores.keySet()) {
+            var score = scores.get(botId);
+            var token = botsController.getBotToken(botId);
+            results.add(tournamentId + ";" + token + ";" + score);
+        }
+
+        return String.join("\n", results.stream().toArray(String[]::new));
     }
 }

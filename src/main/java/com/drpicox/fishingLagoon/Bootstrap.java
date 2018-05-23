@@ -77,7 +77,7 @@ public class Bootstrap {
     private GameController gameController;
     public GameController getGameController() throws SQLException {
         if (gameController == null) {
-            gameController = new GameController(adminToken, getBotsController(), getRoundsController(), getRoundParser());
+            gameController = new GameController(adminToken, getBotsController(), getRoundsController(), getRoundParser(), getFishingLagoonRules());
         }
         return gameController;
     }

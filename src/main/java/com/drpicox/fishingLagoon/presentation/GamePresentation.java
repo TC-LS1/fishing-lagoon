@@ -114,4 +114,8 @@ public class GamePresentation {
     public void setTournamentMode(boolean tournamentMode) {
         game.setTournamentMode(tournamentMode);
     }
+
+    public String getTournamentScores(TournamentId tournamentId, AdminToken adminToken) throws SQLException {
+        return game.getTournamentScores(tournamentId, adminToken);
+    }
 }

@@ -69,4 +69,16 @@ public class RoundDescriptor {
     public TimeOffset getScoreOffset() {
         return new TimeOffset(0 + seatMilliseconds + commandMilliseconds);
     }
+
+    @Override
+    public String toString() {
+        return "RoundDescriptor{" +
+                "\n    seatMilliseconds=" + seatMilliseconds +
+                "\n  , commandMilliseconds=" + commandMilliseconds +
+                "\n  , scoreMilliseconds=" + scoreMilliseconds +
+                "\n  , maxDensity=" + maxDensity +
+                "\n  , lagoons=" + lagoons +
+                "\n  , weekCount=" + weekCount +
+                '}';
+    }
 }

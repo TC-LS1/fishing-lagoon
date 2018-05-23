@@ -62,6 +62,14 @@ public class RoundsMetadataTable {
         }
     }
 
+    public List<RoundId> listTournamentIds(TournamentId tournamentId) throws SQLException {
+        try (var pstmt = this.connection.prepareStatement("SELECT id FROM roundsMetadatas WHERE tournamentId = ?")) {
+            pstmt.setString(1, tournamentId.getValue());
+
+            return getRoundIds(pstmt);
+        }
+    }
+
     private List<RoundId> getRoundIds(PreparedStatement pstmt) throws SQLException {
         var result = new LinkedList<RoundId>();
         try (var rs = pstmt.executeQuery()) {

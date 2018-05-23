@@ -20,4 +20,11 @@ public class RoundSeat {
     public int getLagoonIndex() {
         return lagoonIndex;
     }
+
+    @Override
+    public String toString() {
+        return "RoundSeat{" +
+                "lagoonIndex=" + lagoonIndex +
+                '}';
+    }
 }

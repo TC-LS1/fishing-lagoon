@@ -90,6 +90,29 @@ public class GameTournamentsTest {
         gamePresentation.createRound("", token(1), ts(0L));
     }
 
+    @Test
+    public void tournament_recovers_score_of_bot_id_in_csv() throws SQLException {
+        gamePresentation.createRound(".fishPopulation=10\nweekCount=1", token(1), ts(0L));
+        gamePresentation.createTournamentRounds(tournament("demo"), ".fishPopulation=10\nweekCount=1\n---\n.fishPopulation=10\nweekCount=1", adminToken, ts(0L));
+
+        gamePresentation.seatBot(round(1), token(1), 0, ts(0 * MINUTE));
+        gamePresentation.seatBot(round(1), token(2), 0, ts(0 * MINUTE));
+        gamePresentation.seatBot(round(2), token(1), 0, ts(1 * MINUTE));
+        gamePresentation.seatBot(round(3), token(1), 0, ts(2 * MINUTE));
+        gamePresentation.seatBot(round(3), token(3), 0, ts(2 * MINUTE));
+        gamePresentation.commandBot(round(1), token(1), asList(fish(1)), ts(0 * MINUTE + 20 * SECOND));
+        gamePresentation.commandBot(round(1), token(2), asList(fish(2)), ts(0 * MINUTE + 20 * SECOND));
+        gamePresentation.commandBot(round(2), token(1), asList(fish(3)), ts(1 * MINUTE + 20 * SECOND));
+        gamePresentation.commandBot(round(3), token(1), asList(fish(4)), ts(2 * MINUTE + 20 * SECOND));
+        gamePresentation.commandBot(round(3), token(3), asList(fish(5)), ts(2 * MINUTE + 20 * SECOND));
+
+        var csv = gamePresentation.getTournamentScores(tournament("demo"), adminToken);
+        var lines = csv.split("\n");
+        assertThat(asList(lines), containsInAnyOrder(
+                is("demo;token1;7"),
+                is("demo;token3;5")));
+    }
+
 
     private String json(Object ob) {
         return gson.toJson(ob);

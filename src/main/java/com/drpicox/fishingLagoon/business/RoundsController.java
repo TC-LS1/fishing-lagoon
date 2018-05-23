@@ -73,6 +73,10 @@ public class RoundsController {
         return roundsStore.listActives(now);
     }
 
+    public List<Round> listTournamentRounds(TournamentId tournamentId) throws SQLException {
+        return roundsStore.listTournamentRounds(tournamentId);
+    }
+
     public Round getRound(RoundId id) throws SQLException {
         return roundsStore.get(id);
     }
@@ -80,6 +84,7 @@ public class RoundsController {
     public Round seatBot(RoundId id, BotId botId, int lagoonIndex, TimeStamp ts) throws SQLException {
         var round = roundsStore.get(id);
 
+        if (round == null) throw new IllegalArgumentException("Round does not exists: " + id);
         if (!round.getState(ts).isAcceptingSeats()) throw new IllegalStateException("It is not time for seating");
 
         round.seatBot(botId, lagoonIndex);
@@ -89,7 +94,9 @@ public class RoundsController {
     public Round commandBot(RoundId id, BotId botId, List<Action> actions, TimeStamp ts) throws SQLException {
         var round = roundsStore.get(id);
 
+        if (round == null) throw new IllegalArgumentException("Round does not exists: " + id);
         if (!round.getState(ts).isAcceptingCommands()) throw new IllegalStateException("It is not time for commanding");
+
         round.commandBot(botId, actions);
         return roundsStore.save(round);
     }
@@ -104,4 +111,5 @@ public class RoundsController {
     private boolean hasActiveRound(TimeStamp now) throws SQLException {
         return getActiveRound(now) != null;
     }
+
 }

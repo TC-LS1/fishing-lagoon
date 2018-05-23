@@ -11,4 +11,11 @@ public class LagoonDescriptor {
     public long getFishPopulation() {
         return fishPopulation;
     }
+
+    @Override
+    public String toString() {
+        return "LagoonDescriptor{" +
+                "fishPopulation=" + fishPopulation +
+                '}';
+    }
 }

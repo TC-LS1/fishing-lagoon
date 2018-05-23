@@ -3,6 +3,7 @@ package com.drpicox.fishingLagoon.persistence;
 import com.drpicox.fishingLagoon.business.bots.BotId;
 import com.drpicox.fishingLagoon.business.rounds.Round;
 import com.drpicox.fishingLagoon.business.rounds.RoundId;
+import com.drpicox.fishingLagoon.business.tournaments.TournamentId;
 import com.drpicox.fishingLagoon.common.TimeStamp;
 
 import java.sql.SQLException;
@@ -42,20 +43,22 @@ public class RoundsStore {
     }
 
     public List<Round> list() throws SQLException {
-        List<Round> result = new ArrayList<>();
-
         var ids = metadataTable.listIds();
-        for (var id: ids) {
-            result.add(get(id));
-        }
-
-        return result;
+        return getRounds(ids);
     }
 
     public List<Round> listActives(TimeStamp now) throws SQLException {
-        List<Round> result = new ArrayList<>();
-
         var ids = metadataTable.listActiveIds(now);
+        return getRounds(ids);
+    }
+
+    public List<Round> listTournamentRounds(TournamentId tournamentId) throws SQLException {
+        var ids = metadataTable.listTournamentIds(tournamentId);
+        return getRounds(ids);
+    }
+
+    private List<Round> getRounds(List<RoundId> ids) throws SQLException {
+        List<Round> result = new ArrayList<>();
         for (var id: ids) {
             result.add(get(id));
         }

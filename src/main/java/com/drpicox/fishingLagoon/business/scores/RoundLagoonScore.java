@@ -17,4 +17,11 @@ public class RoundLagoonScore {
     public long getFishPopulation() {
         return fishPopulation;
     }
+
+    @Override
+    public String toString() {
+        return "RoundLagoonScore{" +
+                "fishPopulation=" + fishPopulation +
+                '}';
+    }
 }

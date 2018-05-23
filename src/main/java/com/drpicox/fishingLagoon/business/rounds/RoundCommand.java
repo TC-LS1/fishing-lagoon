@@ -28,4 +28,11 @@ public class RoundCommand {
 
         this.actions = actions;
     }
+
+    @Override
+    public String toString() {
+        return "RoundCommand{" +
+                "actions=" + actions +
+                '}';
+    }
 }

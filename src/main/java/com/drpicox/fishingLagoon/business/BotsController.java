@@ -40,4 +40,8 @@ public class BotsController {
         bot.update(name);
         return botsStore.save(bot);
     }
+
+    public BotToken getBotToken(BotId botId) throws SQLException {
+        return botsStore.getBotToken(botId);
+    }
 }

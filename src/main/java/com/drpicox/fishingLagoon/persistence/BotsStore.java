@@ -91,4 +91,17 @@ public class BotsStore {
         }
     }
 
+    public BotToken getBotToken(BotId id) throws SQLException {
+        try (var pstmt = connection.prepareStatement("SELECT token FROM bots WHERE id = ?")) {
+            pstmt.setString(1, id.getValue());
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    String token = rs.getString("token");
+                    return new BotToken(token);
+                } else {
+                    return null;
+                }
+            }
+        }
+    }
 }

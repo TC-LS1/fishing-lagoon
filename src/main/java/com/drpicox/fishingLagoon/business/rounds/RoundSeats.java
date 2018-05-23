@@ -49,4 +49,11 @@ public class RoundSeats {
 
         seat.setLagoonIndex(lagoonIndex, lagoonCount);
     }
+
+    @Override
+    public String toString() {
+        return "RoundSeats{" +
+                "seats=" + seats +
+                '}';
+    }
 }

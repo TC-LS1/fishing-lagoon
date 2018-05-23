@@ -73,4 +73,12 @@ public class RoundScores {
     public Set<BotId> getBots() {
         return new HashSet<>(bots.keySet());
     }
+
+    @Override
+    public String toString() {
+        return "RoundScores{" +
+                "lagoons=" + lagoons +
+                ", bots=" + bots +
+                '}';
+    }
 }
