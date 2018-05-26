@@ -1,5 +1,6 @@
 package com.drpicox.fishingLagoon.presentation;
 
+import com.drpicox.fishingLagoon.business.tournaments.TournamentId;
 import com.drpicox.fishingLagoon.common.TimeStamp;
 import com.drpicox.fishingLagoon.common.actions.ActionParser;
 import com.drpicox.fishingLagoon.business.AdminToken;
@@ -50,9 +51,25 @@ public class RestServerController {
         put("/rounds/:roundId/seats/:botToken", this::seatBot, gson::toJson);
         put("/rounds/:roundId/commands/:botToken", this::commandBot, gson::toJson);
 
+        post("/tournaments", this::createTournament, gson::toJson);
+        get("/tournaments", this::getTournament, gson::toJson);
+
         exception(IllegalArgumentException.class, this::handle);
         exception(IllegalStateException.class, this::handle);
         exception(SQLException.class, this::handle);
+    }
+
+    private Object createTournament(Request request, Response response) throws SQLException {
+        var adminToken = new AdminToken(request.queryParams("adminToken"));
+        var tournamentId = new TournamentId(request.queryParams("tournamentId"));
+        var rounds = request.body();
+        return game.createTournamentRounds(tournamentId, rounds, adminToken, now());
+    }
+
+    private Object getTournament(Request request, Response response) throws SQLException {
+        var adminToken = new AdminToken(request.queryParams("adminToken"));
+        var tournamentId = new TournamentId(request.queryParams("tournamentId"));
+        return game.getTournamentScores(tournamentId, adminToken);
     }
 
     static int getHerokuAssignedPort() {

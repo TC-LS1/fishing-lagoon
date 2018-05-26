@@ -10,7 +10,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 
-public class RoundsCommandsTable {
+public class  RoundsCommandsTable {
     private ActionParser actionParser;
     private Connection connection;
 
