@@ -101,21 +101,36 @@ public class GameController {
 
         var tournamentRounds = roundsController.listTournamentRounds(tournamentId);
 
-        var scores = new HashMap<BotId, Long>();
+        var totals = new HashMap<BotId, Long>();
         for (var round: tournamentRounds) {
             var roundScore = rules.score(round);
             for (var bot: round.getBots()) {
-                long score = scores.getOrDefault(bot, 0L);
-                score += roundScore.getScore(bot);
-                scores.put(bot, score);
+                var score = roundScore.getScore(bot);
+
+                var total = totals.getOrDefault(bot, 0L);
+                total += score;
+                totals.put(bot, total);
+            }
+        }
+
+        var partials = new HashMap<BotId, String>();
+        for (var round: tournamentRounds) {
+            var roundScore = rules.score(round);
+            for (var bot: totals.keySet()) {
+                var score = roundScore.getScore(bot);
+
+                var partial = partials.getOrDefault(bot, "");
+                partial += ";" + score;
+                partials.put(bot, partial);
             }
         }
 
         var results = new ArrayList<String>();
-        for (var botId: scores.keySet()) {
-            var score = scores.get(botId);
+        for (var botId: totals.keySet()) {
+            var total = totals.get(botId);
+            var partial = partials.get(botId);
             var token = botsController.getBotToken(botId);
-            results.add(tournamentId + ";" + token + ";" + score);
+            results.add(tournamentId + ";" + token + partial + ";" + total);
         }
 
         return String.join("\n", results.stream().toArray(String[]::new));

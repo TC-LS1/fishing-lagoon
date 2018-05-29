@@ -109,8 +109,8 @@ public class GameTournamentsTest {
         var csv = gamePresentation.getTournamentScores(tournament("demo"), adminToken);
         var lines = csv.split("\n");
         assertThat(asList(lines), containsInAnyOrder(
-                is("demo;token1;7"),
-                is("demo;token3;5")));
+                is("demo;token1;3;4;7"),
+                is("demo;token3;0;5;5")));
     }
 
 
