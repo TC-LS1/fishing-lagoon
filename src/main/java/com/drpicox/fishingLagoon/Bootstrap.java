@@ -82,10 +82,18 @@ public class Bootstrap {
         return gameController;
     }
 
+    private BotsQueryLimits queryLimits;
+    public BotsQueryLimits getQueryLimits() {
+        if (queryLimits == null) {
+            queryLimits = new BotsQueryLimits();
+        }
+        return queryLimits;
+    }
+
     private GamePresentation gamePresentation;
     public GamePresentation getGamePresentation() throws SQLException {
         if (gamePresentation == null) {
-            gamePresentation = new GamePresentation(getGameController(), getFishingLagoonRules(), new BotsQueryLimits());
+            gamePresentation = new GamePresentation(getGameController(), getFishingLagoonRules(), getQueryLimits());
         }
         return gamePresentation;
     }

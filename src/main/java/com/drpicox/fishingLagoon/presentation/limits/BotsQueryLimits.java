@@ -8,9 +8,15 @@ import java.util.Map;
 
 public class BotsQueryLimits {
 
+    private boolean skipLimits = false;
     private Map<BotToken, BotQueryLimit> limits = new HashMap<>();
 
+    public void setSkipLimits(boolean mode) {
+        this.skipLimits = mode;
+    }
+
     public void trackAccess(BotToken token, TimeStamp ts) {
+        if (skipLimits) return;
         var queryLimit = limits.get(token);
         if (queryLimit == null) {
             queryLimit = new BotQueryLimit();
@@ -21,6 +27,7 @@ public class BotsQueryLimits {
     }
 
     public void verifyAccess(BotToken token, TimeStamp ts) {
+        if (skipLimits) return;
         var queryLimit = limits.get(token);
         if (queryLimit == null) return;
 

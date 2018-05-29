@@ -4,8 +4,8 @@ import com.drpicox.fishingLagoon.common.TimeStamp;
 
 public class BotQueryLimit {
 
-    private static final long TIME_LIMIT = 1000L;
-    private static final long TIME_PENALISATION = 60000L;
+    public static final long TIME_LIMIT = 100L;
+    public static final long TIME_PENALISATION = 60000L;
 
     private long windowMilliseconds0 = Long.MIN_VALUE;
     private long windowMilliseconds1 = Long.MIN_VALUE;

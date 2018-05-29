@@ -18,7 +18,7 @@ public class MainServer {
         var restController = bootstrap.getRestServerController();
 
         generateBotTokens(bootstrap.getGameController(), adminToken);
-        setTournamentMode(bootstrap.getGameController(), tournamentMode);
+        setTournamentMode(bootstrap, tournamentMode);
 
         restController.start();
     }
@@ -37,7 +37,7 @@ public class MainServer {
         }
     }
 
-    private static void setTournamentMode(GameController gameController, String tournamentMode) {
+    private static void setTournamentMode(Bootstrap bootstrap, String tournamentMode) throws SQLException {
         var mode = false;
 
         if (tournamentMode != null) {
@@ -52,7 +52,8 @@ public class MainServer {
             }
         }
 
-        gameController.setTournamentMode(mode);
+        bootstrap.getGameController().setTournamentMode(mode);
+        bootstrap.getQueryLimits().setSkipLimits(mode);
     }
 
     private static void generateBotToken(String common, String token, GameController gameController, AdminToken adminToken) {
