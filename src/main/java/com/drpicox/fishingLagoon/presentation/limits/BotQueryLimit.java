@@ -35,7 +35,7 @@ public class BotQueryLimit {
         shiftWindow(milliseconds);
     }
 
-    private void shiftWindow(long nextMilliseconds) {
+    private synchronized void shiftWindow(long nextMilliseconds) {
         windowMilliseconds0 = windowMilliseconds1;
         windowMilliseconds1 = windowMilliseconds2;
         windowMilliseconds2 = windowMilliseconds3;

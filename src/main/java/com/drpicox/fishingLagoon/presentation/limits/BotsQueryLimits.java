@@ -5,11 +5,13 @@ import com.drpicox.fishingLagoon.common.TimeStamp;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class BotsQueryLimits {
 
     private boolean skipLimits = false;
-    private Map<BotToken, BotQueryLimit> limits = new HashMap<>();
+    private ConcurrentMap<BotToken, BotQueryLimit> limits = new ConcurrentHashMap<>();
 
     public void setSkipLimits(boolean mode) {
         this.skipLimits = mode;
@@ -20,7 +22,9 @@ public class BotsQueryLimits {
         var queryLimit = limits.get(token);
         if (queryLimit == null) {
             queryLimit = new BotQueryLimit();
-            limits.put(token, queryLimit);
+            limits.putIfAbsent(token, queryLimit);
+
+            queryLimit = limits.get(token);
         }
 
         queryLimit.trackAccess(ts);
