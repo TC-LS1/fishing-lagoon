@@ -40,7 +40,9 @@ public class RoundsMetadataTable {
     }
 
     public RoundId getLastRoundId() throws SQLException {
-        try (var pstmt = this.connection.prepareStatement("SELECT id FROM roundsMetadatas WHERE start = SELECT MAX(start) FROM roundsMetadatas")) {
+        try (var pstmt = this.connection.prepareStatement(
+                "SELECT id FROM roundsMetadatas " +
+                        "WHERE start = SELECT MAX(start) FROM roundsMetadatas")) {
             try (var rs = pstmt.executeQuery()) {
                 return nextRoundId(rs);
             }
@@ -54,7 +56,9 @@ public class RoundsMetadataTable {
     }
 
     public List<RoundId> listActiveIds(TimeStamp now) throws SQLException {
-        try (var pstmt = this.connection.prepareStatement("SELECT id FROM roundsMetadatas WHERE start <= ? AND ? < end")) {
+        try (var pstmt = this.connection.prepareStatement(
+                "SELECT id FROM roundsMetadatas " +
+                        "WHERE start <= ? AND ? < end")) {
             pstmt.setLong(1, now.getMilliseconds());
             pstmt.setLong(2, now.getMilliseconds());
 
@@ -63,7 +67,10 @@ public class RoundsMetadataTable {
     }
 
     public List<RoundId> listTournamentIds(TournamentId tournamentId) throws SQLException {
-        try (var pstmt = this.connection.prepareStatement("SELECT id FROM roundsMetadatas WHERE tournamentId = ?")) {
+        try (var pstmt = this.connection.prepareStatement(
+                "SELECT id FROM roundsMetadatas " +
+                        "WHERE tournamentId = ? " +
+                        "ORDER BY start")) {
             pstmt.setString(1, tournamentId.getValue());
 
             return getRoundIds(pstmt);

@@ -113,6 +113,22 @@ public class GameTournamentsTest {
                 is("demo;token3;0;5;5")));
     }
 
+    @Test
+    public void tournament_recovers_score_of_bot_id_in_right_order() throws SQLException {
+        gamePresentation.createTournamentRounds(tournament("demo"), ".fishPopulation=10\nweekCount=1\n---\n.fishPopulation=100\nweekCount=1", adminToken, ts(0L));
+
+        gamePresentation.seatBot(round(1), token(1), 0, ts(0 * MINUTE));
+        gamePresentation.seatBot(round(2), token(1), 0, ts(1 * MINUTE));
+        gamePresentation.commandBot(round(1), token(1), asList(fish(100)), ts(0 * MINUTE + 20 * SECOND));
+        var csv1 = gamePresentation.getTournamentScores(tournament("demo"), adminToken);
+
+        gamePresentation.commandBot(round(2), token(1), asList(fish(100)), ts(1 * MINUTE + 20 * SECOND));
+        var csv2 = gamePresentation.getTournamentScores(tournament("demo"), adminToken);
+
+        assertThat(csv1, is("demo;token1;10;0;10"));
+        assertThat(csv2, is("demo;token1;10;100;110"));
+    }
+
 
     private String json(Object ob) {
         return gson.toJson(ob);
