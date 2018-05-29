@@ -52,7 +52,7 @@ public class RestServerController {
         put("/rounds/:roundId/commands/:botToken", this::commandBot, gson::toJson);
 
         post("/tournaments", this::createTournament, gson::toJson);
-        get("/tournaments", this::getTournament, gson::toJson);
+        get("/tournaments", this::getTournament);
 
         exception(IllegalArgumentException.class, this::handle);
         exception(IllegalStateException.class, this::handle);
@@ -69,7 +69,10 @@ public class RestServerController {
     private Object getTournament(Request request, Response response) throws SQLException {
         var adminToken = new AdminToken(request.queryParams("adminToken"));
         var tournamentId = new TournamentId(request.queryParams("tournamentId"));
-        return game.getTournamentScores(tournamentId, adminToken);
+        var result = game.getTournamentScores(tournamentId, adminToken);
+        response.type("text/plain");
+        response.body(result + '\n');
+        return result + '\n';
     }
 
     static int getHerokuAssignedPort() {
