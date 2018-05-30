@@ -74,6 +74,10 @@ public class RoundScores {
         return new HashSet<>(bots.keySet());
     }
 
+    public boolean containsBot(BotId bot) {
+        return bots.containsKey(bot);
+    }
+
     @Override
     public String toString() {
         return "RoundScores{" +

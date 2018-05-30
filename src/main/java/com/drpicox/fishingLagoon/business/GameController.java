@@ -101,23 +101,24 @@ public class GameController {
 
         var tournamentRounds = roundsController.listTournamentRounds(tournamentId);
 
-        var totals = new HashMap<BotId, Long>();
+        var bots = new HashSet<BotId>();
         for (var round: tournamentRounds) {
             var roundScore = rules.score(round);
             for (var bot: round.getBots()) {
-                var score = roundScore.getScore(bot);
+                bots.add(bot);
+            }
+        }
+
+        var totals = new HashMap<BotId, Long>();
+        var partials = new HashMap<BotId, String>();
+        for (var round: tournamentRounds) {
+            var roundScore = rules.score(round);
+            for (var bot: bots) {
+                var score = roundScore.containsBot(bot) ? roundScore.getScore(bot) : -1;
 
                 var total = totals.getOrDefault(bot, 0L);
                 total += score;
                 totals.put(bot, total);
-            }
-        }
-
-        var partials = new HashMap<BotId, String>();
-        for (var round: tournamentRounds) {
-            var roundScore = rules.score(round);
-            for (var bot: totals.keySet()) {
-                var score = roundScore.getScore(bot);
 
                 var partial = partials.getOrDefault(bot, "");
                 partial += ";" + score;

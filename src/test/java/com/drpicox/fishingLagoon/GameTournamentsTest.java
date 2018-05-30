@@ -110,7 +110,7 @@ public class GameTournamentsTest {
         var lines = csv.split("\n");
         assertThat(asList(lines), containsInAnyOrder(
                 is("demo;token1;3;4;7"),
-                is("demo;token3;0;5;5")));
+                is("demo;token3;-1;5;4")));
     }
 
     @Test
@@ -125,7 +125,7 @@ public class GameTournamentsTest {
         gamePresentation.commandBot(round(2), token(1), asList(fish(100)), ts(1 * MINUTE + 20 * SECOND));
         var csv2 = gamePresentation.getTournamentScores(tournament("demo"), adminToken);
 
-        assertThat(csv1, is("demo;token1;10;0;10"));
+        assertThat(csv1, is("demo;token1;10;-1;9"));
         assertThat(csv2, is("demo;token1;10;100;110"));
     }
 
