@@ -108,9 +108,10 @@ public class GameTournamentsTest {
 
         var csv = gamePresentation.getTournamentScores(tournament("demo"), adminToken);
         var lines = csv.split("\n");
+        System.out.println(csv);
         assertThat(asList(lines), containsInAnyOrder(
                 is("demo;token1;3;4;7"),
-                is("demo;token3;-1;5;4")));
+                is("demo;token3;-2;5;3")));
     }
 
     @Test
@@ -127,6 +128,29 @@ public class GameTournamentsTest {
 
         assertThat(csv1, is("demo;token1;10;-1;9"));
         assertThat(csv2, is("demo;token1;10;100;110"));
+    }
+
+    @Test
+    public void tournament_returns_0_if_fished_nothing_n1_if_seated_but_not_commanded_n2_if_no_seated() throws SQLException {
+        gamePresentation.createTournamentRounds(tournament("demo"), ".fishPopulation=10\nweekCount=1\n---\n.fishPopulation=10\nweekCount=1", adminToken, ts(0L));
+
+        gamePresentation.seatBot(round(1), token(1), 0, ts(0 * MINUTE));
+        gamePresentation.seatBot(round(1), token(2), 0, ts(0 * MINUTE));
+        gamePresentation.seatBot(round(1), token(3), 0, ts(0 * MINUTE));
+        gamePresentation.commandBot(round(1), token(1), asList(fish(10)), ts(0 * MINUTE + 20 * SECOND));
+        gamePresentation.commandBot(round(1), token(2), asList(fish(10)), ts(0 * MINUTE + 20 * SECOND));
+        gamePresentation.commandBot(round(1), token(3), asList(fish(10)), ts(0 * MINUTE + 20 * SECOND));
+
+        gamePresentation.seatBot(round(2), token(1), 0, ts(1 * MINUTE));
+        gamePresentation.seatBot(round(2), token(2), 0, ts(1 * MINUTE));
+        gamePresentation.commandBot(round(2), token(1), asList(fish(0)), ts(1 * MINUTE + 20 * SECOND));
+
+        var csv = gamePresentation.getTournamentScores(tournament("demo"), adminToken);
+        var lines = csv.split("\n");
+        assertThat(asList(lines), containsInAnyOrder(
+                is("demo;token1;3;0;3"),
+                is("demo;token2;3;-1;2"),
+                is("demo;token3;3;-2;1")));
     }
 
 

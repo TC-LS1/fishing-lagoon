@@ -103,7 +103,6 @@ public class GameController {
 
         var bots = new HashSet<BotId>();
         for (var round: tournamentRounds) {
-            var roundScore = rules.score(round);
             for (var bot: round.getBots()) {
                 bots.add(bot);
             }
@@ -114,7 +113,10 @@ public class GameController {
         for (var round: tournamentRounds) {
             var roundScore = rules.score(round);
             for (var bot: bots) {
-                var score = roundScore.containsBot(bot) ? roundScore.getScore(bot) : -1;
+                var isSeated = round.getSeat(bot) != null;
+                var isCommanded = round.getCommand(bot) != null;
+                var computedScore = roundScore.getScore(bot);
+                var score = isSeated ? isCommanded ? computedScore : -1 : -2;
 
                 var total = totals.getOrDefault(bot, 0L);
                 total += score;
