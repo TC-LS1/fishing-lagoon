@@ -108,7 +108,6 @@ public class GameTournamentsTest {
 
         var csv = gamePresentation.getTournamentScores(tournament("demo"), adminToken);
         var lines = csv.split("\n");
-        System.out.println(csv);
         assertThat(asList(lines), containsInAnyOrder(
                 is("demo;token1;3;4;7"),
                 is("demo;token3;-2;5;3")));
@@ -151,6 +150,20 @@ public class GameTournamentsTest {
                 is("demo;token1;3;0;3"),
                 is("demo;token2;3;-1;2"),
                 is("demo;token3;3;-2;1")));
+    }
+
+    @Test
+    public void tournament_lagoons_returns_final_fishes_count_of_all_lagoons() throws SQLException {
+        gamePresentation.createTournamentRounds(tournament("demo"), ".fishPopulation=10\nweekCount=2\nmaxDensity=1\n---\n.fishPopulation=10\nweekCount=2", adminToken, ts(0L));
+
+        gamePresentation.seatBot(round(1), token(1), 0, ts(0 * MINUTE));
+        gamePresentation.seatBot(round(1), token(2), 0, ts(0 * MINUTE));
+        gamePresentation.commandBot(round(1), token(1), asList(fish(8), rest()), ts(0 * MINUTE + 20 * SECOND));
+
+        gamePresentation.seatBot(round(2), token(1), 0, ts(1 * MINUTE));
+
+        var csv = gamePresentation.getTournamentFishPopulations(tournament("demo"), adminToken);
+        assertThat(csv, is("fish-populations;26;22;48"));
     }
 
 

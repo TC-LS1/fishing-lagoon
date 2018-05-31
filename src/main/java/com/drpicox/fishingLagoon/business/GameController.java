@@ -138,4 +138,26 @@ public class GameController {
 
         return String.join("\n", results.stream().toArray(String[]::new));
     }
+
+    public String getTournamentFishPopulations(TournamentId tournamentId, AdminToken adminToken) throws SQLException {
+        if (!this.adminToken.validate(adminToken)) throw new IllegalArgumentException("Invalid adminToken");
+
+        var tournamentRounds = roundsController.listTournamentRounds(tournamentId);
+
+        var totalFishes = 0;
+        StringBuilder result = new StringBuilder("fish-populations");
+        for (var round: tournamentRounds) {
+            var roundScore = rules.score(round);
+            var fishes = 0;
+            var lagoonCount = roundScore.getLagoonCount();
+            for (var lagoonIndex = 0; lagoonIndex < lagoonCount; lagoonIndex++) {
+                var currentFihes = roundScore.getFishPopulation(lagoonIndex);
+                fishes += currentFihes;
+            }
+            totalFishes += fishes;
+            result.append(';').append(fishes);
+        }
+
+        return result.append(';').append(totalFishes).toString();
+    }
 }

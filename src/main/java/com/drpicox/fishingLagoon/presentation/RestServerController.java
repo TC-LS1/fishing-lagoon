@@ -53,6 +53,7 @@ public class RestServerController {
 
         post("/tournaments", this::createTournament, gson::toJson);
         get("/tournaments", this::getTournament);
+        get("/tournaments/fish-populations", this::getTournamentFishPopulations);
 
         exception(IllegalArgumentException.class, this::handle);
         exception(IllegalStateException.class, this::handle);
@@ -70,6 +71,15 @@ public class RestServerController {
         var adminToken = new AdminToken(request.queryParams("adminToken"));
         var tournamentId = new TournamentId(request.queryParams("tournamentId"));
         var result = game.getTournamentScores(tournamentId, adminToken);
+        response.type("text/plain");
+        response.body(result + '\n');
+        return result + '\n';
+    }
+
+    private Object getTournamentFishPopulations(Request request, Response response) throws SQLException {
+        var adminToken = new AdminToken(request.queryParams("adminToken"));
+        var tournamentId = new TournamentId(request.queryParams("tournamentId"));
+        var result = game.getTournamentFishPopulations(tournamentId, adminToken);
         response.type("text/plain");
         response.body(result + '\n');
         return result + '\n';

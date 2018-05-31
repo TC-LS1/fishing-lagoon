@@ -118,4 +118,8 @@ public class GamePresentation {
     public String getTournamentScores(TournamentId tournamentId, AdminToken adminToken) throws SQLException {
         return game.getTournamentScores(tournamentId, adminToken);
     }
+
+    public String getTournamentFishPopulations(TournamentId tournamentId, AdminToken adminToken) throws SQLException {
+        return game.getTournamentFishPopulations(tournamentId, adminToken);
+    }
 }
