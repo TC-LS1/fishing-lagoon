@@ -12,7 +12,7 @@ public class RoundSeat {
 
     public void setLagoonIndex(int lagoonIndex, int lagoonCount) {
         if (lagoonIndex < 0) throw new IllegalArgumentException("Seat lagoonIndex cannot be negative, it was: " + lagoonIndex);
-        if (lagoonIndex >= lagoonCount) throw new IllegalArgumentException("Seat lagoonIndex cannot be greater than available lagoons, it was " + lagoonIndex + " and lagoon count was " + lagoonIndex);
+        if (lagoonIndex >= lagoonCount) throw new IllegalArgumentException("Seat lagoonIndex cannot be greater than available lagoons, it was " + lagoonIndex + " and lagoon count was " + lagoonCount);
 
         this.lagoonIndex = lagoonIndex;
     }
