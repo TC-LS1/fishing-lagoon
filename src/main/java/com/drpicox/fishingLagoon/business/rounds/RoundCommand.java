@@ -24,7 +24,7 @@ public class RoundCommand {
     }
 
     public void commandBot(BotId bot, List<Action> actions, int weekCount) {
-        if (actions.size() != weekCount) throw new IllegalArgumentException("Actions length must match weekCount");
+        if (actions.size() != weekCount) throw new IllegalArgumentException("Actions length must match weekCount, it has " + actions.size() + " actions but there are " + weekCount + " weeks");
 
         this.actions = actions;
     }
