@@ -89,7 +89,7 @@ public class GamePresentation {
     }
 
     private BotId getBotId(BotToken token, TimeStamp now) throws SQLException {
-        limits.verifyAccess(token, now);
+        verifyLimitAccess(token, now);
 
         Bot bot = game.getBotByToken(token);
         if (bot == null) throw new IllegalArgumentException("Invalid bot token");
@@ -98,12 +98,18 @@ public class GamePresentation {
         return bot.getId();
     }
 
-    private BotId mayGetBotId(BotToken token, TimeStamp now) throws SQLException {
+    private void verifyLimitAccess(BotToken token, TimeStamp now) {
+        boolean isEmptyToken = token != null && token.equals(new BotToken(""));
+        if (isEmptyToken) return;
+
         limits.verifyAccess(token, now);
+    }
+
+    private BotId mayGetBotId(BotToken token, TimeStamp now) throws SQLException {
+        verifyLimitAccess(token, now);
         boolean isEmptyToken = token != null && token.equals(new BotToken(""));
         if (isEmptyToken) return null;
 
-        limits.trackAccess(token, now);
         var bot = game.getBotByToken(token);
         if (bot == null) return null;
 

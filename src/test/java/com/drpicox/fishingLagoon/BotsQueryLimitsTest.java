@@ -115,6 +115,14 @@ public class BotsQueryLimitsTest {
         limits.verifyAccess(token(1), ts(1 * PENALIZATION - 1));
     }
 
+    @Test()
+    public void it_has_a_fast_check_that_fails_if_in_penalisation_time_other_works() {
+        manyAccesses(5, token(1), ts(0 * LIMIT));
+        makeIllegalAccess(token(1), ts(0 * LIMIT));
+
+        limits.verifyAccess(token(2), ts(1 * PENALIZATION - 1));
+    }
+
     @Test
     public void it_has_a_fast_check_that_does_not_track_an_access() {
         manyAccesses(4, token(1), ts(0 * LIMIT));
